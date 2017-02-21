@@ -1,53 +1,21 @@
-/*
- * entry.S - Entry point to system mode from user mode
- */
+# 1 "entry.S"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 1 "<command-line>" 2
+# 1 "entry.S"
 
-#include <asm.h>
-#include <segment.h>
 
 
-/**************************************************/
-/**** Save & Restore ******************************/
-/**                                              **/
-/** When we change to privilege level 0 (kernel) **/
-/** (through an interrupt, a system call, an     **/
-/** exception ...) we must save the state of the **/
-/** currently running task (save).               **/
-/**                                              **/
-/** Stack layout in 'systemCall':                **/
-/**                                              **/
-/**   0(%esp) - %ebx    \                        **/
-/**   4(%esp) - %ecx     |                       **/
-/**   8(%esp) - %edx     |                       **/
-/**   C(%esp) - %esi     | Register saved        **/
-/**  10(%esp) - %edi     |  by 'save'            **/
-/**  14(%esp) - %ebp     |                       **/
-/**  18(%esp) - %eax     |                       **/
-/**  1C(%esp) - %ds      |                       **/
-/**  20(%esp) - %es      |                       **/
-/**  24(%esp) - %fs      |                       **/
-/**  28(%esp) - %gs     /                        **/
-/**  2C(%esp) - %eip    \                        **/
-/**  30(%esp) - %cs      |                       **/
-/**  34(%esp) - %eflags  |  Return context saved **/
-/**  38(%esp) - %oldesp  |   by the processor.   **/
-/**  3C(%esp) - %oldss  /                        **/
-/**                                              **/
-/**************************************************/
 
-#define SAVE_ALL \
-      pushl %gs; \
-      pushl %fs; \
-      pushl %es; \
-      pushl %ds; \
-      pushl %eax; \
-      pushl %ebp; \
-      pushl %edi; \
-      pushl %esi; \
-      pushl %edx; \
-      pushl %ecx; \
-      pushl %ebx; \
-      movl $__KERNEL_DS, %edx;    \
-      movl %edx, %ds;           \
-      movl %edx, %es
-
+# 1 "include/asm.h" 1
+# 6 "entry.S" 2
+# 1 "include/segment.h" 1
+# 7 "entry.S" 2
+# 71 "entry.S"
+.globl keyboard_handler; .type keyboard_handler, @function; .align 0; keyboard_handler:
+      pushl %gs; pushl %fs; pushl %es; pushl %ds; pushl %eax; pushl %ebp; pushl %edi; pushl %esi; pushl %edx; pushl %ecx; pushl %ebx; movl $0x18, %edx; movl %edx, %ds; movl %edx, %es
+      movb $0x20, %al; outb %al, $0x20
+      call RSR
+      popl %gs; popl %fs; popl %es; popl %ds; popl %eax; popl %ebp; popl %edi; popl %esi; popl %edx; popl %ecx; popl %ebx
+      iret

@@ -73,6 +73,7 @@ void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
   idt[vector].highOffset      = highWord((DWord)handler);
 }
 
+void keyboard_handler ();
 
 void setIdt()
 {
@@ -84,6 +85,20 @@ void setIdt()
 
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
 
+  setInterruptHandler(33, keyboard_handler, 0);
+
   set_idt_reg(&idtR);
+}
+
+void RSR() {
+  Byte key = inb(0x60);
+  if(key & 0x80 == 0x80) {
+	printk("xivato");
+	//char d = key & 0x7f + '0';
+	//printc(d);
+	int i = key & 0x7f;
+	char c = char_map[i]; //??
+	printc_xy(0,25,c);
+  }
 }
 
