@@ -45,6 +45,7 @@
 typedef unsigned char byte;
 typedef unsigned short word;
 typedef  u_int32_t u32;
+int zeos_ticks;		//Clock variable
 
 #define DEFAULT_MAJOR_ROOT 0
 #define DEFAULT_MINOR_ROOT 0
@@ -104,6 +105,8 @@ int main(int argc, char ** argv)
 		major_root = DEFAULT_MAJOR_ROOT;
 		minor_root = DEFAULT_MINOR_ROOT;
 	}
+
+	zeos_ticks = 0;		//For the clock
 
 	minix_open(argv[1]);				    /* Copy the boot sector */
 	i = read(fd, buf, sizeof(buf));

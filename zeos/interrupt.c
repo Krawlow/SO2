@@ -75,6 +75,10 @@ void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
 
 void keyboard_handler ();
 
+void system_call_handler ();
+
+void pass_sys_params ();
+
 void setIdt()
 {
   /* Program interrups/exception service routines */
@@ -87,18 +91,70 @@ void setIdt()
 
   setInterruptHandler(33, keyboard_handler, 0);
 
+	setInterruptHandler(32, clock_handler, 0);
+
   set_idt_reg(&idtR);
+}
+
+void clock() {
+	zeos_ticks++;
+	zeos_show_clock();
+}
+
+void perror() {
+		
+}
+
+int sys_ni_syscall(){
+	return -38; /*ENOSYS*/
+}
+
+void write_id ();
+
+setTrapHandler(0x80, system_call_handler, 3);
+
+int write (int fd, char * buffer, int size) {
+	pass_sys_params();
+	//write_id();
+	int $0x80
+	return size;
+}
+int check_fd (int fd, int operation) {
+	if(fd == 1 && operation == "LECTURA" || operation == "ESCRIPTURA") return 0;
+	else return -1;
+}
+
+void sys_write(int fd, char * buffer, int size) {
+	//write(4,"nose",buffer.size());
+	if (check_fd(fd,"ESCRIPTURA") != 0 || buffer == NULL || size < 0) return -1;
+	//			copy data from/to
+	
+	int err = sys_write_console(buffer,size);
+	if (err < 0) {
+		errno = -err;
+		return -1;
+	}
+	else return err;
+}
+
+int gettime() {
+	return zeos_ticks();
+}
+
+void sys_gettime() {
+	gettime();
 }
 
 void RSR() {
   Byte key = inb(0x60);
-  if(key & 0x80 == 0x80) {
-	printk("xivato");
-	//char d = key & 0x7f + '0';
-	//printc(d);
-	int i = key & 0x7f;
-	char c = char_map[i]; //??
-	printc_xy(0,25,c);
+		printc_xy(40,24,'J');
+  if((key & 128) == 128) { //0x80
+		printk("xivato2");
+		//char d = key & 0x7f + '0';
+		//printc(d);
+		int i = key & 0x7f;
+		char c = char_map[i]; //??
+		printc_xy(0,0,c);
   }
 }
 
