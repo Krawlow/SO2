@@ -14,19 +14,19 @@ Register    idtR;
 
 char char_map[] =
 {
-  '\0','\0','1','2','3','4','5','6',
-  '7','8','9','0','\'','¡','\0','\0',
+  'C','C','1','2','3','4','5','6',
+  '7','8','9','0','\'','¡','C','C',
   'q','w','e','r','t','y','u','i',
-  'o','p','`','+','\0','\0','a','s',
+  'o','p','`','+','C','C','a','s',
   'd','f','g','h','j','k','l','ñ',
-  '\0','º','\0','ç','z','x','c','v',
-  'b','n','m',',','.','-','\0','*',
-  '\0','\0','\0','\0','\0','\0','\0','\0',
-  '\0','\0','\0','\0','\0','\0','\0','7',
+  'C','º','C','ç','z','x','c','v',
+  'b','n','m',',','.','-','C','*',
+  'C','C','C','C','C','C','C','C',
+  'C','C','C','C','C','C','C','7',
   '8','9','-','4','5','6','+','1',
-  '2','3','0','\0','\0','\0','<','\0',
-  '\0','\0','\0','\0','\0','\0','\0','\0',
-  '\0','\0'
+  '2','3','0','C','C','C','<','C',
+  'C','C','C','C','C','C','C','C',
+  'C','C'
 };
 
 void setInterruptHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
@@ -75,6 +75,8 @@ void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
 
 void keyboard_handler ();
 
+void clock_handler ();
+
 void system_call_handler ();
 
 void pass_sys_params ();
@@ -91,54 +93,45 @@ void setIdt()
 
   setInterruptHandler(33, keyboard_handler, 0);
 
-	setInterruptHandler(32, clock_handler, 0);
+  setInterruptHandler(32, clock_handler, 0);
+
+	setTrapHandler(0x80, system_call_handler, 3);
 
   set_idt_reg(&idtR);
 }
-
+extern zeos_ticks;
 void clock() {
 	zeos_ticks++;
 	zeos_show_clock();
 }
 
 void perror() {
-		
-}
-
-int sys_ni_syscall(){
-	return -38; /*ENOSYS*/
+		//printk(ERRNO);
 }
 
 void write_id ();
 
-setTrapHandler(0x80, system_call_handler, 3);
-
-int write (int fd, char * buffer, int size) {
+int write (int fd, char * buffer, int size) {			 //Write wrapper
 	pass_sys_params();
-	//write_id();
-	int $0x80
-	return size;
-}
-int check_fd (int fd, int operation) {
-	if(fd == 1 && operation == "LECTURA" || operation == "ESCRIPTURA") return 0;
-	else return -1;
+	write_id();
+	int $0x80;
+	return size;					//S'ha de retornar el "resultat" si es positiu, si es negatiu s'ha de fer lu de errno i retornar -1
 }
 
 void sys_write(int fd, char * buffer, int size) {
-	//write(4,"nose",buffer.size());
 	if (check_fd(fd,"ESCRIPTURA") != 0 || buffer == NULL || size < 0) return -1;
 	//			copy data from/to
 	
 	int err = sys_write_console(buffer,size);
 	if (err < 0) {
-		errno = -err;
+		//errno = -err;
 		return -1;
 	}
 	else return err;
 }
 
 int gettime() {
-	return zeos_ticks();
+	return zeos_ticks;
 }
 
 void sys_gettime() {
@@ -147,13 +140,9 @@ void sys_gettime() {
 
 void RSR() {
   Byte key = inb(0x60);
-		printc_xy(40,24,'J');
-  if((key & 128) == 128) { //0x80
-		printk("xivato2");
-		//char d = key & 0x7f + '0';
-		//printc(d);
+  if((key & 0x80) == 0x80) { //0x80
 		int i = key & 0x7f;
-		char c = char_map[i]; //??
+		char c = char_map[i];
 		printc_xy(0,0,c);
   }
 }

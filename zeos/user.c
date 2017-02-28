@@ -29,6 +29,8 @@ int __attribute__ ((__section__(".text.main")))
 	count = 75;
 	acum = 0;
 	acum = outer(count);
+	char buffer[5]="hello";
+	write(1,&buffer,5);
 	while(1);
 	return(0);
 
