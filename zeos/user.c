@@ -4,6 +4,8 @@ char buff[24];
 
 int pid;
 
+int write (int fd, char * buffer, int size);
+
 long inner(long n)
 {
 	int i;

@@ -113,7 +113,7 @@ void write_id ();
 
 int write (int fd, char * buffer, int size) {			 //Write wrapper
 	pass_sys_params();
-	write_id();
+	write_id(); //Posa 4 a %eax
 	int $0x80;
 	return size;					//S'ha de retornar el "resultat" si es positiu, si es negatiu s'ha de fer lu de errno i retornar -1
 }
