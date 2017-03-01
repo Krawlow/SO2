@@ -25,6 +25,7 @@ int check_fd(int fd, int permissions)
 
 int sys_ni_syscall()
 {
+	printk("Va a una pos de la taula de syscalls invalida");
 	return -38; /*ENOSYS*/
 }
 
@@ -44,4 +45,22 @@ int sys_fork()
 
 void sys_exit()
 {  
+}
+extern zeos_ticks;
+void sys_gettime() {
+	printk("Arriba a fer la syscall de gettime");
+	return zeos_ticks;
+}
+
+void sys_write(int fd, char * buffer, int size) {
+	//asm("movl -12(%ebp), %ebx;movl -8(%ebp), %ecx;movl -4(%ebp), %edx;");
+	if (check_fd(fd,ESCRIPTURA) != 0 || buffer == NULL || size < 0) return -1;
+	//			copy data from/to
+	
+	int err = sys_write_console(buffer,size);
+	if (err < 0) {
+		//errno = -err;
+		return -1;
+	}
+	else return err;
 }

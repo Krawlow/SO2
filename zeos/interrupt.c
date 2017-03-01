@@ -79,8 +79,6 @@ void clock_handler ();
 
 void system_call_handler ();
 
-void pass_sys_params ();
-
 void setIdt()
 {
   /* Program interrups/exception service routines */
@@ -103,28 +101,6 @@ extern zeos_ticks;
 void clock() {
 	zeos_ticks++;
 	zeos_show_clock();
-}
-
-void perror() {
-		//printk(ERRNO);
-}
-
-void write_id ();
-
-void sys_write(int fd, char * buffer, int size) {
-	if (check_fd(fd,"ESCRIPTURA") != 0 || buffer == NULL || size < 0) return -1;
-	//			copy data from/to
-	
-	int err = sys_write_console(buffer,size);
-	if (err < 0) {
-		//errno = -err;
-		return -1;
-	}
-	else return err;
-}
-
-void sys_gettime() {
-	return zeos_ticks;
 }
 
 void RSR() {

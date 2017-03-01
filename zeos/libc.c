@@ -43,3 +43,30 @@ int strlen(char *a)
   return i;
 }
 
+int write (int fd, char * buffer, int size) {	//Write wrapper
+	asm("movl -12(%ebp), %ebx;movl -8(%ebp), %ecx;movl -4(%ebp), %edx;");
+	asm("movl $4, %eax"); //Posa 4 a %eax
+	asm("int $0x80;");
+	register int err asm("eax");
+	if (err < 0) {
+		errno = err;		
+		return -1;
+	}
+	else return err;	//S'ha de retornar el "resultat" si es positiu, si es negatiu s'ha de fer lu de errno i retornar -1
+}
+
+int gettime() {
+	asm("movl $10, %eax"); //Posa 10 a %eax
+	asm("int $0x80;");
+	register int err asm("eax");
+	if (err < 0) {
+		errno = err;		
+		return -1;
+	}
+	else return err;
+}
+
+void perror() {
+	write(1,errno,strlen(errno));
+}
+
