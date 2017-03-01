@@ -94,14 +94,6 @@ fin:
 	  movl %eax, 0x18(%esp) //push %eax
 	  RESTORE_ALL
 	  iret
-ENTRY(pass_sys_params)
-	  movl -12(%ebp), %ebx
-	  movl -8(%ebp), %ecx
-	  movl -4(%ebp), %edx
-	  iret
-ENTRY(write_id)
-	  movl $4, %eax
-	  iret
 
 
 

@@ -4,7 +4,40 @@ char buff[24];
 
 int pid;
 
-int write (int fd, char * buffer, int size);
+int write (int fd, char * buffer, int size) {	//Write wrapper
+	asm(	"movl -12(%ebp), %%ebx
+		movl -8(%ebp), %%ecx
+		movl -4(%ebp), %%edx");
+	asm("movl $4, %%eax"); //Posa 4 a %eax
+	int $0x80;
+	int err;
+	asm(	"movl %%eax, %%1"
+		:"=r" (err)	//output
+		:		//input
+		:		//clobbered register
+		);
+	if (err < 0) {
+		//update errno = err;		
+		return -1;
+	}
+	else return err;	//S'ha de retornar el "resultat" si es positiu, si es negatiu s'ha de fer lu de errno i retornar -1
+}
+
+int gettime() {
+	asm("movl $10, %%eax"); //Posa 10 a %eax
+	int $0x80;
+	int err;
+	asm(	"movl %%eax, %%1"
+		:"=r" (err)	//output
+		:		//input
+		:		//clobbered register
+		);
+	if (err < 0) {
+		//update errno = err;		
+		return -1;
+	}
+	else return err;
+}
 
 long inner(long n)
 {

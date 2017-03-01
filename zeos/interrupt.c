@@ -111,13 +111,6 @@ void perror() {
 
 void write_id ();
 
-int write (int fd, char * buffer, int size) {			 //Write wrapper
-	pass_sys_params();
-	write_id(); //Posa 4 a %eax
-	int $0x80;
-	return size;					//S'ha de retornar el "resultat" si es positiu, si es negatiu s'ha de fer lu de errno i retornar -1
-}
-
 void sys_write(int fd, char * buffer, int size) {
 	if (check_fd(fd,"ESCRIPTURA") != 0 || buffer == NULL || size < 0) return -1;
 	//			copy data from/to
@@ -130,12 +123,8 @@ void sys_write(int fd, char * buffer, int size) {
 	else return err;
 }
 
-int gettime() {
-	return zeos_ticks;
-}
-
 void sys_gettime() {
-	gettime();
+	return zeos_ticks;
 }
 
 void RSR() {
