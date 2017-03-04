@@ -9,7 +9,7 @@ int sys_write_console(char *buffer,int size)
 {
   int i;
 
-printk("Arriba a fer el sys write console");
+//printk("Arriba a fer el sys write console");
   
   for (i=0; i<size; i++)
     printc(buffer[i]);

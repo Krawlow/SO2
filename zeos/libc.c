@@ -44,12 +44,14 @@ int strlen(char *a)
 }
 
 int write (int fd, char * buffer, int size) {	//Write wrapper
-	asm("movl -12(%ebp), %ebx;movl -8(%ebp), %ecx;movl -4(%ebp), %edx;");
+	asm("pushl %ebx; pushl %ecx; pushl %edx;");
+	asm("movl 8(%ebp), %ebx;movl 12(%ebp), %ecx;movl 16(%ebp), %edx;");
 	asm("movl $4, %eax"); //Posa 4 a %eax
 	asm("int $0x80;");
+	asm("popl %edx; popl %ecx; popl %ebx;");
 	register int err asm("eax");
 	if (err < 0) {
-		errno = err;		
+		errno = -err;		
 		return -1;
 	}
 	else return err;	//S'ha de retornar el "resultat" si es positiu, si es negatiu s'ha de fer lu de errno i retornar -1
@@ -60,13 +62,15 @@ int gettime() {
 	asm("int $0x80;");
 	register int err asm("eax");
 	if (err < 0) {
-		errno = err;		
+		errno = -err;		
 		return -1;
 	}
 	else return err;
 }
 
 void perror() {
-	write(1,errno,strlen(errno));
+	char b[20];
+	itoa(errno,b);
+	write(1,b,strlen(b));
 }
 
