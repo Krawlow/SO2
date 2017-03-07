@@ -57,8 +57,20 @@ int sys_write(int fd, char * buffer, int size) {
 	if (check_fd(fd,ESCRIPTURA) != 0) return err;
 	if (buffer == NULL) return -14; //EFAULT
 	if (size < 0) return -22; //EINVAL
-	//			copy data from/to
-	
-	err = sys_write_console(buffer,size);
-	return err;
+	char c[10];
+	err = 0;
+	for (int i = 0; i < size; i+=10) {
+		/*for (int j = 0; j < 10; j++) {
+			c[j] = buffer[j+i*j];		//copy data from/to
+		}*/
+		if (size - i < 10) {
+			copy_from_user(&buffer[i],&c,size-i);
+			err += sys_write_console(c,size-i);
+		}
+		else {
+			copy_from_user(&buffer[i],&c,10);
+			err += sys_write_console(c,10);
+		}
+	}
+	return err;	
 }

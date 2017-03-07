@@ -35,6 +35,7 @@ int __attribute__ ((__section__(".text.main")))
 	//gettime();
 	//write(0,buffer,strlen(buffer));
 	//perror();
+	//runjp();
 	runjp();
 	while(1);
 	return(0);

@@ -44,11 +44,11 @@ int strlen(char *a)
 }
 
 int write (int fd, char * buffer, int size) {	//Write wrapper
-	asm("pushl %ebx; pushl %ecx; pushl %edx;");
+	asm("pushl %ebx;"); //ebx,esi,edi
 	asm("movl 8(%ebp), %ebx;movl 12(%ebp), %ecx;movl 16(%ebp), %edx;");
 	asm("movl $4, %eax"); //Posa 4 a %eax
 	asm("int $0x80;");
-	asm("popl %edx; popl %ecx; popl %ebx;");
+	asm("popl %ebx;");
 	register int err asm("eax");
 	if (err < 0) {
 		errno = -err;		

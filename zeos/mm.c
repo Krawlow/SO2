@@ -129,10 +129,23 @@ void set_pe_flag()
   cr0 |= 0x80000000;
   write_cr0(cr0);
 }
+struct list_head freequeue;
+void init_freequeue() {
+	INIT_LIST_HEAD(freequeue);
+	for(int i = 0; i < NR_TASKS;i++)
+	list_add_tail(&task[i].list,&freequeue);
+}
+
+struct list_head readyqueue;
+void init_readyqueue() {
+	INIT_LIST_HEAD(readyqueue);
+}
 
 /* Initializes paging for the system address space */
 void init_mm()
 {
+	init_freequeue();
+	init_readyqueue();
   init_table_pages();
   init_frames();
   init_dir_pages();
