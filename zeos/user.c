@@ -1,7 +1,5 @@
 #include <libc.h>
 
-//#include <errno.h>
-
 char buff[24];
 
 int pid;
@@ -36,7 +34,10 @@ int __attribute__ ((__section__(".text.main")))
 	//write(0,buffer,strlen(buffer));
 	//perror();
 	//runjp();
-	runjp();
+	//runjp();
+	//init_process();
+	//while(zeos_ticks < 1000);
+	//task_switch(idle);
 	while(1);
 	return(0);
 

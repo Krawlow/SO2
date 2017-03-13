@@ -58,14 +58,42 @@ void cpu_idle(void)
 	;
 	}
 }
-
+extern struct list_head freequeue;
+struct task_struct * idle_task;
 void init_idle (void)
 {
-
+	struct list_head * e = list_first(&freequeue); //Queue of a task union
+	list_del(e);
+	struct task_struct * t = list_head_to_task_struct(e);
+	t->PID=0;
+	allocate_DIR(t);
+	//Execution process to save the context or something like that
+	//Task union has the stack, but we have a task struct
+	//Store in the stack the address of the code of cpu_idle
+	//Store in the stack the initial value that we want to assign to register ebp when undoing the dynamic link
+	idle_task = t;
 }
 
 void init_task1(void)
 {
+	struct list_head * e = list_first(&freequeue); //Queue of a task union
+	list_del(e);
+	struct task_struct * t = list_head_to_task_struct(e);
+	t->PID=1;
+	allocate_DIR(t);
+	set_user_pages(t);
+	//TSS pointing to t.stack (t IS task struct, doesn't have a STACK)
+	set_cr3(t->dir_pages_baseAddr);
+}
+
+void task_switch(union task_union*t) {
+	//TSS point to t's system stack, don't know how to do that
+	set_cr3(t->task->dir_pages_baseAddr);
+	register int aux asm("ebp");
+	current()->ebp_initial_value = aux;
+	int ebp = t->task->ebp_initial_value;
+	asm("movl %%esp, %0" : "=r"(ebp) :);
+	asm("RET");
 }
 
 

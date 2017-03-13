@@ -31,7 +31,7 @@
 00000000000i[      ]   SB16 support: no
 00000000000i[      ]   USB support: no
 00000000000i[      ]   VGA extension support: vbe
-00000000000i[MEM0  ] allocated memory at 0xb584d008. after alignment, vector=0xb584e000
+00000000000i[MEM0  ] allocated memory at 0xb58fa008. after alignment, vector=0xb58fb000
 00000000000i[MEM0  ] 16,00MB
 00000000000i[MEM0  ] mem block size = 0x00100000, blocks=16
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('/opt/bochs_gdb/share/bochs/BIOS-bochs-latest')
@@ -41,7 +41,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Tue Mar  7 10:52:45 2017 (time0=1488880365)
+00000000000i[CMOS  ] Setting initial clock to: Sun Mar 12 11:13:57 2017 (time0=1489313637)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -128,6 +128,44 @@
 00000000000i[PLUGIN] reset of 'parallel' plugin device by virtual method
 00000000000i[PLUGIN] reset of 'serial' plugin device by virtual method
 00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000fff0 len 1
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000fff0 len 1
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000ffc0 len 40
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000fff0 len 8
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000fff0 len 7
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000fff0 len 1
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000fff0 len 1
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000fff0 len 8
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 000000000000fff0 len 7
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] addr 0000000000010850 len 1
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[GDBST ] Setting breakpoint at 0000000000010850
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
+00000000000i[XGUI  ] Mouse capture off
 00000004661i[BIOS  ] $Revision: 12412 $ $Date: 2014-07-10 09:28:59 +0200 (Do, 10. Jul 2014) $
 00000318049i[KBD   ] reset-disable command received
 00000320818i[BIOS  ] Starting rombios32
@@ -167,53 +205,472 @@
 00001529176i[BXVGA ] VBE known Display Interface b0c0
 00001529208i[BXVGA ] VBE known Display Interface b0c5
 00001532133i[VBIOS ] VBE Bios $Id: vbe.c,v 1.65 2014/07/08 18:02:25 vruppert Exp $
+00001724068i[XGUI  ] charmap update. Font Height is 16
 00014040191i[BIOS  ] Booting from 0000:7c00
-00016726336i[XGUI  ] charmap update. Font Height is 16
-00035746711i[FLOPPY] partial read() on floppy image returns 232/512
-00035791155i[FLOPPY] read() on floppy image returns 0
-00035835599i[FLOPPY] read() on floppy image returns 0
-00035880043i[FLOPPY] read() on floppy image returns 0
-00035924487i[FLOPPY] read() on floppy image returns 0
-00035968931i[FLOPPY] read() on floppy image returns 0
-00036013375i[FLOPPY] read() on floppy image returns 0
-00036057819i[FLOPPY] read() on floppy image returns 0
-00036102263i[FLOPPY] read() on floppy image returns 0
-00036146707i[FLOPPY] read() on floppy image returns 0
-00036191151i[FLOPPY] read() on floppy image returns 0
-00036235595i[FLOPPY] read() on floppy image returns 0
-00036280039i[FLOPPY] read() on floppy image returns 0
-00036324483i[FLOPPY] read() on floppy image returns 0
-00036368927i[FLOPPY] read() on floppy image returns 0
-00036413371i[FLOPPY] read() on floppy image returns 0
-00036459566i[FLOPPY] read() on floppy image returns 0
-00036504010i[FLOPPY] read() on floppy image returns 0
-00036548454i[FLOPPY] read() on floppy image returns 0
-00036592898i[FLOPPY] read() on floppy image returns 0
-00036637342i[FLOPPY] read() on floppy image returns 0
-00036681786i[FLOPPY] read() on floppy image returns 0
-00036726230i[FLOPPY] read() on floppy image returns 0
-00036770674i[FLOPPY] read() on floppy image returns 0
-00036815118i[FLOPPY] read() on floppy image returns 0
-00396112000p[XGUI  ] >>PANIC<< POWER button turned off.
-00396112000i[CPU0  ] CPU is in protected mode (active)
-00396112000i[CPU0  ] CS.mode = 32 bit
-00396112000i[CPU0  ] SS.mode = 32 bit
-00396112000i[CPU0  ] EFER   = 0x00000000
-00396112000i[CPU0  ] | EAX=00000001  EBX=00001380  ECX=001188dd  EDX=00000001
-00396112000i[CPU0  ] | ESP=0011bfe0  EBP=0011bfe8  ESI=000e0200  EDI=00003ff4
-00396112000i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf zf af PF cf
-00396112000i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-00396112000i[CPU0  ] |  CS:0023( 0004| 0|  3) 00000000 ffffffff 1 1
-00396112000i[CPU0  ] |  DS:002b( 0005| 0|  3) 00000000 ffffffff 1 1
-00396112000i[CPU0  ] |  SS:002b( 0005| 0|  3) 00000000 ffffffff 1 1
-00396112000i[CPU0  ] |  ES:002b( 0005| 0|  3) 00000000 ffffffff 1 1
-00396112000i[CPU0  ] |  FS:0000( 0000| 0|  0) 00000000 00000000 0 0
-00396112000i[CPU0  ] |  GS:0000( 0000| 0|  0) 00000000 00000000 0 0
-00396112000i[CPU0  ] | EIP=00100016 (00100016)
-00396112000i[CPU0  ] | CR0=0x80000011 CR2=0x00000000
-00396112000i[CPU0  ] | CR3=0x0002a000 CR4=0x00000000
-00396112000i[CPU0  ] 0x00100016>> jmp .-2 (0x00100016) : EBFE
-00396112000i[CMOS  ] Last time is 1488880464 (Tue Mar  7 10:54:24 2017)
-00396112000i[XGUI  ] Exit
-00396112000i[      ] restoring default signal behavior
-00396112000i[SIM   ] quit_sim called with exit code 1
+00029731035i[FLOPPY] partial read() on floppy image returns 368/512
+00029775479i[FLOPPY] read() on floppy image returns 0
+00029819923i[FLOPPY] read() on floppy image returns 0
+00029864367i[FLOPPY] read() on floppy image returns 0
+00029908811i[FLOPPY] read() on floppy image returns 0
+00029953255i[FLOPPY] read() on floppy image returns 0
+00029997699i[FLOPPY] read() on floppy image returns 0
+00030043890i[FLOPPY] read() on floppy image returns 0
+00030088334i[FLOPPY] read() on floppy image returns 0
+00030132778i[FLOPPY] read() on floppy image returns 0
+00030177222i[FLOPPY] read() on floppy image returns 0
+00030221666i[FLOPPY] read() on floppy image returns 0
+00030266110i[FLOPPY] read() on floppy image returns 0
+00030310554i[FLOPPY] read() on floppy image returns 0
+00030354998i[FLOPPY] read() on floppy image returns 0
+00030399442i[FLOPPY] read() on floppy image returns 0
+00030443886i[FLOPPY] read() on floppy image returns 0
+00030488330i[FLOPPY] read() on floppy image returns 0
+00030532774i[FLOPPY] read() on floppy image returns 0
+00030577218i[FLOPPY] read() on floppy image returns 0
+00030621662i[FLOPPY] read() on floppy image returns 0
+00030666106i[FLOPPY] read() on floppy image returns 0
+00030710550i[FLOPPY] read() on floppy image returns 0
+00030754994i[FLOPPY] read() on floppy image returns 0
+00030799438i[FLOPPY] read() on floppy image returns 0
+00030845636i[FLOPPY] read() on floppy image returns 0
+00030890080i[FLOPPY] read() on floppy image returns 0
+00030934524i[FLOPPY] read() on floppy image returns 0
+00030978968i[FLOPPY] read() on floppy image returns 0
+00031023412i[FLOPPY] read() on floppy image returns 0
+00031067856i[FLOPPY] read() on floppy image returns 0
+00031112300i[FLOPPY] read() on floppy image returns 0
+00031158432i[GDBST ] found breakpoint at 10850
+00031158432i[GDBST ] stopped with ac1
+00031158432i[XGUI  ] Mouse capture off
+00031158432i[XGUI  ] Mouse capture off
+00031158432i[GDBST ] reg 8 set to 0000000000010850
+00031158432i[XGUI  ] Mouse capture off
+00031158432i[GDBST ] reg 41 set to 00000000ffffffff
+00031158432i[XGUI  ] Mouse capture off
+00031158432i[XGUI  ] Mouse capture off
+00031158432i[GDBST ] Removing breakpoint at 0000000000010850
+00031158432i[XGUI  ] Mouse capture off
+00031158432i[GDBST ] addr 0000000000010840 len 40
+00031158432i[XGUI  ] Mouse capture off
+00031158432i[XGUI  ] Mouse capture off
+00031158432i[GDBST ] stepping
+00031158433i[GDBST ] stopped with ac2
+00031158433i[XGUI  ] Mouse capture off
+00031158433i[XGUI  ] Mouse capture off
+00031158433i[XGUI  ] Mouse capture off
+00031158433i[GDBST ] addr 0000000000010840 len 40
+00031158433i[XGUI  ] Mouse capture off
+00031158433i[GDBST ] Setting breakpoint at 0000000000010850
+00031158433i[XGUI  ] Mouse capture off
+00031158433i[XGUI  ] Mouse capture off
+00031158433i[GDBST ] stepping
+00031158434i[GDBST ] stopped with ac2
+00031158434i[XGUI  ] Mouse capture off
+00031158434i[XGUI  ] Mouse capture off
+00031158434i[XGUI  ] Mouse capture off
+00031158434i[GDBST ] Removing breakpoint at 0000000000010850
+00031158434i[XGUI  ] Mouse capture off
+00031158434i[GDBST ] addr 0000000000010840 len 40
+00031158434i[XGUI  ] Mouse capture off
+00031158434i[GDBST ] Setting breakpoint at 0000000000010850
+00031158434i[XGUI  ] Mouse capture off
+00031158434i[GDBST ] stepping
+00031158435i[GDBST ] stopped with ac2
+00031158435i[XGUI  ] Mouse capture off
+00031158435i[XGUI  ] Mouse capture off
+00031158435i[XGUI  ] Mouse capture off
+00031158435i[GDBST ] Removing breakpoint at 0000000000010850
+00031158435i[XGUI  ] Mouse capture off
+00031158435i[GDBST ] addr 0000000000010840 len 40
+00031158435i[XGUI  ] Mouse capture off
+00031158435i[GDBST ] Setting breakpoint at 0000000000010850
+00031158435i[XGUI  ] Mouse capture off
+00031158435i[GDBST ] stepping
+00031158436i[GDBST ] stopped with ac2
+00031158436i[XGUI  ] Mouse capture off
+00031158436i[XGUI  ] Mouse capture off
+00031158436i[XGUI  ] Mouse capture off
+00031158436i[GDBST ] Removing breakpoint at 0000000000010850
+00031158436i[XGUI  ] Mouse capture off
+00031158436i[GDBST ] addr 0000000000010840 len 40
+00031158436i[XGUI  ] Mouse capture off
+00031158436i[GDBST ] Setting breakpoint at 0000000000010850
+00031158436i[XGUI  ] Mouse capture off
+00031158436i[GDBST ] stepping
+00031158437i[GDBST ] stopped with ac2
+00031158437i[XGUI  ] Mouse capture off
+00031158437i[XGUI  ] Mouse capture off
+00031158437i[XGUI  ] Mouse capture off
+00031158437i[GDBST ] Removing breakpoint at 0000000000010850
+00031158437i[XGUI  ] Mouse capture off
+00031158437i[GDBST ] addr 0000000000010840 len 40
+00031158437i[XGUI  ] Mouse capture off
+00031158437i[GDBST ] Setting breakpoint at 0000000000010850
+00031158437i[XGUI  ] Mouse capture off
+00031158437i[GDBST ] stepping
+00031158438i[GDBST ] stopped with ac2
+00031158438i[XGUI  ] Mouse capture off
+00031158438i[XGUI  ] Mouse capture off
+00031158438i[XGUI  ] Mouse capture off
+00031158438i[GDBST ] Removing breakpoint at 0000000000010850
+00031158438i[XGUI  ] Mouse capture off
+00031158438i[GDBST ] addr 0000000000010840 len 40
+00031158438i[XGUI  ] Mouse capture off
+00031158438i[GDBST ] Setting breakpoint at 0000000000010850
+00031158438i[XGUI  ] Mouse capture off
+00031158438i[GDBST ] stepping
+00031158439i[GDBST ] stopped with ac2
+00031158439i[XGUI  ] Mouse capture off
+00031158439i[XGUI  ] Mouse capture off
+00031158439i[GDBST ] addr 0000000000018f88 len 4
+00031158439i[XGUI  ] Mouse capture off
+00031158439i[GDBST ] addr 0000000000018f88 len 4
+00031158439i[XGUI  ] Mouse capture off
+00031158439i[GDBST ] addr 0000000000010863 len 1
+00031158439i[XGUI  ] Mouse capture off
+00031158439i[GDBST ] Setting breakpoint at 0000000000010863
+00031158439i[XGUI  ] Mouse capture off
+00031158446i[GDBST ] found breakpoint at 10863
+00031158446i[GDBST ] stopped with ac1
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[GDBST ] reg 8 set to 0000000000010863
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[GDBST ] reg 41 set to 00000000ffffffff
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[GDBST ] Removing breakpoint at 0000000000010863
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[GDBST ] Removing breakpoint at 0000000000010850
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[GDBST ] addr 0000000000010840 len 40
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[GDBST ] Setting breakpoint at 0000000000010850
+00031158446i[XGUI  ] Mouse capture off
+00031158446i[GDBST ] stepping
+00031158447i[GDBST ] stopped with ac2
+00031158447i[XGUI  ] Mouse capture off
+00031158447i[XGUI  ] Mouse capture off
+00031158447i[XGUI  ] Mouse capture off
+00031158447i[GDBST ] Removing breakpoint at 0000000000010850
+00031158447i[XGUI  ] Mouse capture off
+00031158447i[GDBST ] addr 0000000000010840 len 40
+00031158447i[XGUI  ] Mouse capture off
+00031158447i[GDBST ] Setting breakpoint at 0000000000010850
+00031158447i[XGUI  ] Mouse capture off
+00031158447i[GDBST ] stepping
+00031158448i[GDBST ] stopped with ac2
+00031158448i[XGUI  ] Mouse capture off
+00031158448i[XGUI  ] Mouse capture off
+00031158448i[XGUI  ] Mouse capture off
+00031158448i[GDBST ] Removing breakpoint at 0000000000010850
+00031158448i[XGUI  ] Mouse capture off
+00031158448i[GDBST ] addr 0000000000010840 len 40
+00031158448i[XGUI  ] Mouse capture off
+00031158448i[GDBST ] Setting breakpoint at 0000000000010850
+00031158448i[XGUI  ] Mouse capture off
+00031158448i[GDBST ] stepping
+00031158449i[GDBST ] stopped with ac2
+00031158449i[XGUI  ] Mouse capture off
+00031158449i[XGUI  ] Mouse capture off
+00031158449i[XGUI  ] Mouse capture off
+00031158449i[GDBST ] Removing breakpoint at 0000000000010850
+00031158449i[XGUI  ] Mouse capture off
+00031158449i[GDBST ] addr 0000000000010840 len 40
+00031158449i[XGUI  ] Mouse capture off
+00031158449i[GDBST ] Setting breakpoint at 0000000000010850
+00031158449i[XGUI  ] Mouse capture off
+00031158449i[GDBST ] stepping
+00031158450i[GDBST ] stopped with ac2
+00031158450i[XGUI  ] Mouse capture off
+00031158450i[XGUI  ] Mouse capture off
+00031158450i[XGUI  ] Mouse capture off
+00031158450i[GDBST ] Removing breakpoint at 0000000000010850
+00031158450i[XGUI  ] Mouse capture off
+00031158450i[GDBST ] addr 0000000000010840 len 40
+00031158450i[XGUI  ] Mouse capture off
+00031158450i[GDBST ] Setting breakpoint at 0000000000010850
+00031158450i[XGUI  ] Mouse capture off
+00031158450i[GDBST ] stepping
+00031158451i[GDBST ] stopped with ac2
+00031158451i[XGUI  ] Mouse capture off
+00031158451i[XGUI  ] Mouse capture off
+00031158451i[XGUI  ] Mouse capture off
+00031158451i[GDBST ] Removing breakpoint at 0000000000010850
+00031158451i[XGUI  ] Mouse capture off
+00031158451i[GDBST ] addr 0000000000010840 len 40
+00031158451i[XGUI  ] Mouse capture off
+00031158451i[GDBST ] Setting breakpoint at 0000000000010850
+00031158451i[XGUI  ] Mouse capture off
+00031158451i[GDBST ] stepping
+00031158452i[GDBST ] stopped with ac2
+00031158452i[XGUI  ] Mouse capture off
+00031158452i[XGUI  ] Mouse capture off
+00031158452i[XGUI  ] Mouse capture off
+00031158452i[GDBST ] Removing breakpoint at 0000000000010850
+00031158452i[XGUI  ] Mouse capture off
+00031158452i[GDBST ] addr 0000000000010840 len 40
+00031158452i[XGUI  ] Mouse capture off
+00031158452i[GDBST ] Setting breakpoint at 0000000000010850
+00031158452i[XGUI  ] Mouse capture off
+00031158452i[GDBST ] stepping
+00031158453i[GDBST ] stopped with ac2
+00031158453i[XGUI  ] Mouse capture off
+00031158453i[XGUI  ] Mouse capture off
+00031158453i[XGUI  ] Mouse capture off
+00031158453i[GDBST ] Removing breakpoint at 0000000000010850
+00031158453i[XGUI  ] Mouse capture off
+00031158453i[GDBST ] addr 0000000000010840 len 40
+00031158453i[XGUI  ] Mouse capture off
+00031158453i[GDBST ] addr 0000000000010880 len 40
+00031158453i[XGUI  ] Mouse capture off
+00031158453i[GDBST ] Setting breakpoint at 0000000000010850
+00031158453i[XGUI  ] Mouse capture off
+00031158453i[GDBST ] stepping
+00031158454i[GDBST ] stopped with ac2
+00031158454i[XGUI  ] Mouse capture off
+00031158454i[XGUI  ] Mouse capture off
+00031158454i[XGUI  ] Mouse capture off
+00031158454i[GDBST ] Removing breakpoint at 0000000000010850
+00031158454i[XGUI  ] Mouse capture off
+00031158454i[GDBST ] addr 0000000000010880 len 40
+00031158454i[XGUI  ] Mouse capture off
+00031158454i[GDBST ] Setting breakpoint at 0000000000010850
+00031158454i[XGUI  ] Mouse capture off
+00031158454i[GDBST ] stepping
+00031158455i[GDBST ] stopped with ac2
+00031158455i[XGUI  ] Mouse capture off
+00031158455i[XGUI  ] Mouse capture off
+00031158455i[XGUI  ] Mouse capture off
+00031158455i[GDBST ] Removing breakpoint at 0000000000010850
+00031158455i[XGUI  ] Mouse capture off
+00031158455i[GDBST ] addr 0000000000010880 len 40
+00031158455i[XGUI  ] Mouse capture off
+00031158455i[GDBST ] Setting breakpoint at 0000000000010850
+00031158455i[XGUI  ] Mouse capture off
+00031158455i[GDBST ] stepping
+00031158456i[GDBST ] stopped with ac2
+00031158456i[XGUI  ] Mouse capture off
+00031158456i[XGUI  ] Mouse capture off
+00031158456i[XGUI  ] Mouse capture off
+00031158456i[GDBST ] Removing breakpoint at 0000000000010850
+00031158456i[XGUI  ] Mouse capture off
+00031158456i[GDBST ] addr 0000000000010880 len 40
+00031158456i[XGUI  ] Mouse capture off
+00031158456i[GDBST ] Setting breakpoint at 0000000000010850
+00031158456i[XGUI  ] Mouse capture off
+00031158456i[GDBST ] stepping
+00031158457i[GDBST ] stopped with ac2
+00031158457i[XGUI  ] Mouse capture off
+00031158457i[XGUI  ] Mouse capture off
+00031158457i[GDBST ] addr 0000000000018f88 len 4
+00031158457i[XGUI  ] Mouse capture off
+00031158457i[GDBST ] addr 0000000000018f88 len 4
+00031158457i[XGUI  ] Mouse capture off
+00031158457i[GDBST ] addr 000000000001088e len 1
+00031158457i[XGUI  ] Mouse capture off
+00031158457i[GDBST ] Setting breakpoint at 000000000001088e
+00031158457i[XGUI  ] Mouse capture off
+00031158468i[GDBST ] found breakpoint at 1088e
+00031158468i[GDBST ] stopped with ac1
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[GDBST ] reg 8 set to 000000000001088e
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[GDBST ] reg 41 set to 00000000ffffffff
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[GDBST ] Removing breakpoint at 000000000001088e
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[GDBST ] Removing breakpoint at 0000000000010850
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[GDBST ] addr 0000000000010880 len 40
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[GDBST ] Setting breakpoint at 0000000000010850
+00031158468i[XGUI  ] Mouse capture off
+00031158468i[GDBST ] stepping
+00031158469i[GDBST ] stopped with ac2
+00031158469i[XGUI  ] Mouse capture off
+00031158469i[XGUI  ] Mouse capture off
+00031158469i[XGUI  ] Mouse capture off
+00031158469i[GDBST ] Removing breakpoint at 0000000000010850
+00031158469i[XGUI  ] Mouse capture off
+00031158469i[GDBST ] addr 0000000000010880 len 40
+00031158469i[XGUI  ] Mouse capture off
+00031158469i[GDBST ] Setting breakpoint at 0000000000010850
+00031158469i[XGUI  ] Mouse capture off
+00031158469i[GDBST ] stepping
+00031158470i[GDBST ] stopped with ac2
+00031158470i[XGUI  ] Mouse capture off
+00031158470i[XGUI  ] Mouse capture off
+00031158470i[XGUI  ] Mouse capture off
+00031158470i[GDBST ] Removing breakpoint at 0000000000010850
+00031158470i[XGUI  ] Mouse capture off
+00031158470i[GDBST ] addr 0000000000010880 len 40
+00031158470i[XGUI  ] Mouse capture off
+00031158470i[GDBST ] Setting breakpoint at 0000000000010850
+00031158470i[XGUI  ] Mouse capture off
+00031158470i[GDBST ] stepping
+00031158471i[GDBST ] stopped with ac2
+00031158471i[XGUI  ] Mouse capture off
+00031158471i[XGUI  ] Mouse capture off
+00031158471i[XGUI  ] Mouse capture off
+00031158471i[GDBST ] Removing breakpoint at 0000000000010850
+00031158471i[XGUI  ] Mouse capture off
+00031158471i[GDBST ] addr 0000000000010840 len 40
+00031158471i[XGUI  ] Mouse capture off
+00031158471i[GDBST ] Setting breakpoint at 0000000000010850
+00031158471i[XGUI  ] Mouse capture off
+00031158471i[GDBST ] stepping
+00031158472i[GDBST ] stopped with ac2
+00031158472i[XGUI  ] Mouse capture off
+00031158472i[XGUI  ] Mouse capture off
+00031158472i[XGUI  ] Mouse capture off
+00031158472i[GDBST ] Removing breakpoint at 0000000000010850
+00031158472i[XGUI  ] Mouse capture off
+00031158472i[GDBST ] addr 0000000000010840 len 40
+00031158472i[XGUI  ] Mouse capture off
+00031158472i[GDBST ] Setting breakpoint at 0000000000010850
+00031158472i[XGUI  ] Mouse capture off
+00031158472i[GDBST ] stepping
+00031158473i[GDBST ] stopped with ac2
+00031158473i[XGUI  ] Mouse capture off
+00031158473i[XGUI  ] Mouse capture off
+00031158473i[XGUI  ] Mouse capture off
+00031158473i[GDBST ] Removing breakpoint at 0000000000010850
+00031158473i[XGUI  ] Mouse capture off
+00031158473i[GDBST ] addr 0000000000010840 len 40
+00031158473i[XGUI  ] Mouse capture off
+00031158473i[GDBST ] Setting breakpoint at 0000000000010850
+00031158473i[XGUI  ] Mouse capture off
+00031158473i[GDBST ] stepping
+00031158474i[GDBST ] stopped with ac2
+00031158474i[XGUI  ] Mouse capture off
+00031158474i[XGUI  ] Mouse capture off
+00031158474i[XGUI  ] Mouse capture off
+00031158474i[GDBST ] Removing breakpoint at 0000000000010850
+00031158474i[XGUI  ] Mouse capture off
+00031158474i[GDBST ] addr 0000000000010840 len 40
+00031158474i[XGUI  ] Mouse capture off
+00031158474i[GDBST ] Setting breakpoint at 0000000000010850
+00031158474i[XGUI  ] Mouse capture off
+00031158474i[GDBST ] stepping
+00031158475i[GDBST ] stopped with ac2
+00031158475i[XGUI  ] Mouse capture off
+00031158475i[XGUI  ] Mouse capture off
+00031158475i[XGUI  ] Mouse capture off
+00031158475i[GDBST ] Removing breakpoint at 0000000000010850
+00031158475i[XGUI  ] Mouse capture off
+00031158475i[GDBST ] addr 0000000000010840 len 40
+00031158475i[XGUI  ] Mouse capture off
+00031158475i[GDBST ] addr 0000000000010880 len 40
+00031158475i[XGUI  ] Mouse capture off
+00031158475i[GDBST ] Setting breakpoint at 0000000000010850
+00031158475i[XGUI  ] Mouse capture off
+00031158475i[GDBST ] stepping
+00031158476i[GDBST ] stopped with ac2
+00031158476i[XGUI  ] Mouse capture off
+00031158476i[XGUI  ] Mouse capture off
+00031158476i[XGUI  ] Mouse capture off
+00031158476i[GDBST ] Removing breakpoint at 0000000000010850
+00031158476i[XGUI  ] Mouse capture off
+00031158476i[GDBST ] addr 0000000000010880 len 40
+00031158476i[XGUI  ] Mouse capture off
+00031158476i[GDBST ] Setting breakpoint at 0000000000010850
+00031158476i[XGUI  ] Mouse capture off
+00031158476i[GDBST ] stepping
+00031158477i[GDBST ] stopped with ac2
+00031158477i[XGUI  ] Mouse capture off
+00031158477i[XGUI  ] Mouse capture off
+00031158477i[XGUI  ] Mouse capture off
+00031158477i[GDBST ] Removing breakpoint at 0000000000010850
+00031158477i[XGUI  ] Mouse capture off
+00031158477i[GDBST ] addr 0000000000010880 len 40
+00031158477i[XGUI  ] Mouse capture off
+00031158477i[GDBST ] Setting breakpoint at 0000000000010850
+00031158477i[XGUI  ] Mouse capture off
+00031158477i[GDBST ] stepping
+00031158478i[GDBST ] stopped with ac2
+00031158478i[XGUI  ] Mouse capture off
+00031158478i[XGUI  ] Mouse capture off
+00031158478i[XGUI  ] Mouse capture off
+00031158478i[GDBST ] Removing breakpoint at 0000000000010850
+00031158478i[XGUI  ] Mouse capture off
+00031158478i[GDBST ] addr 0000000000010880 len 40
+00031158478i[XGUI  ] Mouse capture off
+00031158478i[GDBST ] Setting breakpoint at 0000000000010850
+00031158478i[XGUI  ] Mouse capture off
+00031158478i[GDBST ] stepping
+00031158479i[GDBST ] stopped with ac2
+00031158479i[XGUI  ] Mouse capture off
+00031158479i[XGUI  ] Mouse capture off
+00031158479i[GDBST ] addr 0000000000018f88 len 4
+00031158479i[XGUI  ] Mouse capture off
+00031158479i[GDBST ] addr 0000000000018f88 len 4
+00031158479i[XGUI  ] Mouse capture off
+00031158479i[GDBST ] addr 000000000001088e len 1
+00031158479i[XGUI  ] Mouse capture off
+00031158479i[GDBST ] Setting breakpoint at 000000000001088e
+00031158479i[XGUI  ] Mouse capture off
+00031158490i[GDBST ] found breakpoint at 1088e
+00031158490i[GDBST ] stopped with ac1
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[GDBST ] reg 8 set to 000000000001088e
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[GDBST ] reg 41 set to 00000000ffffffff
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[GDBST ] Removing breakpoint at 000000000001088e
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[GDBST ] Removing breakpoint at 0000000000010850
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[GDBST ] addr 0000000000010880 len 40
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[GDBST ] Setting breakpoint at 0000000000010850
+00031158490i[XGUI  ] Mouse capture off
+00031158490i[GDBST ] stepping
+00031158491i[GDBST ] stopped with ac2
+00031158491i[XGUI  ] Mouse capture off
+00031158491i[XGUI  ] Mouse capture off
+00031158491i[XGUI  ] Mouse capture off
+00031158491i[GDBST ] Removing breakpoint at 0000000000010850
+00031158491i[XGUI  ] Mouse capture off
+00031158491i[GDBST ] addr 0000000000010880 len 40
+00031158491i[XGUI  ] Mouse capture off
+00031158491i[GDBST ] Setting breakpoint at 0000000000010850
+00031158491i[XGUI  ] Mouse capture off
+00031158491i[GDBST ] stepping
+00031158492i[GDBST ] stopped with ac2
+00031158492i[XGUI  ] Mouse capture off
+00031158492i[XGUI  ] Mouse capture off
+00031158492i[XGUI  ] Mouse capture off
+00031158492i[GDBST ] Removing breakpoint at 0000000000010850
+00031158492i[XGUI  ] Mouse capture off
+00031158492i[GDBST ] addr 0000000000010880 len 40
+00031158492i[XGUI  ] Mouse capture off
+00031158492i[GDBST ] Setting breakpoint at 0000000000010850
+00031158492i[XGUI  ] Mouse capture off
+00042136000p[XGUI  ] >>PANIC<< POWER button turned off.
+00042136000i[CPU0  ] CPU is in protected mode (active)
+00042136000i[CPU0  ] CS.mode = 32 bit
+00042136000i[CPU0  ] SS.mode = 32 bit
+00042136000i[CPU0  ] EFER   = 0x00000000
+00042136000i[CPU0  ] | EAX=0011bffc  EBX=00001380  ECX=0000022e  EDX=00007e0b
+00042136000i[CPU0  ] | ESP=0011bfec  EBP=0011bfec  ESI=000e0200  EDI=00003ff4
+00042136000i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf zf af PF cf
+00042136000i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+00042136000i[CPU0  ] |  CS:0023( 0004| 0|  3) 00000000 ffffffff 1 1
+00042136000i[CPU0  ] |  DS:002b( 0005| 0|  3) 00000000 ffffffff 1 1
+00042136000i[CPU0  ] |  SS:002b( 0005| 0|  3) 00000000 ffffffff 1 1
+00042136000i[CPU0  ] |  ES:002b( 0005| 0|  3) 00000000 ffffffff 1 1
+00042136000i[CPU0  ] |  FS:0000( 0000| 0|  0) 00000000 00000000 0 0
+00042136000i[CPU0  ] |  GS:0000( 0000| 0|  0) 00000000 00000000 0 0
+00042136000i[CPU0  ] | EIP=00100003 (00100003)
+00042136000i[CPU0  ] | CR0=0x80000011 CR2=0x00000000
+00042136000i[CPU0  ] | CR3=0x0002a000 CR4=0x00000000
+00042136000i[CPU0  ] 0x00100003>> jmp .-2 (0x00100003) : EBFE
+00042136000i[CMOS  ] Last time is 1489313647 (Sun Mar 12 11:14:07 2017)
+00042136000i[XGUI  ] Exit
+00042136000i[      ] restoring default signal behavior
+00042136000i[SIM   ] quit_sim called with exit code 1

@@ -131,14 +131,14 @@ void set_pe_flag()
 }
 struct list_head freequeue;
 void init_freequeue() {
-	INIT_LIST_HEAD(freequeue);
+	INIT_LIST_HEAD(&freequeue);
 	for(int i = 0; i < NR_TASKS;i++)
-	list_add_tail(&task[i].list,&freequeue);
+		list_add_tail(&task[i].task.list,&freequeue);
 }
 
 struct list_head readyqueue;
 void init_readyqueue() {
-	INIT_LIST_HEAD(readyqueue);
+	INIT_LIST_HEAD(&readyqueue);
 }
 
 /* Initializes paging for the system address space */
