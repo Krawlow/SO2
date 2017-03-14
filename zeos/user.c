@@ -35,7 +35,6 @@ int __attribute__ ((__section__(".text.main")))
 	//perror();
 	//runjp();
 	//runjp();
-	//init_process();
 	//while(zeos_ticks < 1000);
 	//task_switch(idle);
 	while(1);

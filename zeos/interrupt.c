@@ -97,7 +97,7 @@ void setIdt()
 
   set_idt_reg(&idtR);
 }
-extern zeos_ticks;
+extern int zeos_ticks;
 void clock() {
 	zeos_ticks++;
 	zeos_show_clock();

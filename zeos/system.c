@@ -11,7 +11,7 @@
 #include <mm.h>
 #include <io.h>
 #include <utils.h>
-#include <zeos_mm.h> /* TO BE DELETED WHEN ADDED THE PROCESS MANAGEMENT CODE TO BECOME MULTIPROCESS */
+/*#include <zeos_mm.h>*/ /* TO BE DELETED WHEN ADDED THE PROCESS MANAGEMENT CODE TO BECOME MULTIPROCESS */
 
 
 int (*usr_main)(void) = (void *) PH_USER_START;

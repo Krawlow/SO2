@@ -46,7 +46,7 @@ int sys_fork()
 void sys_exit()
 {  
 }
-extern zeos_ticks;
+extern int zeos_ticks;
 int sys_gettime() {
 	//printk("Arriba a fer la syscall de gettime");
 	return zeos_ticks;
