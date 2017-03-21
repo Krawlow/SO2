@@ -43,6 +43,28 @@ int strlen(char *a)
   return i;
 }
 
+int fork (void) {
+	asm("movl $2, %eax"); //Posa 2 a %eax
+	asm("int $0x80;");
+	register int err asm("eax");
+	if (err < 0) {
+		errno = -err;		
+		return -1;
+	}
+	else return err;
+}
+
+int getpid(void) {
+	asm("movl $20, %eax"); //Posa 20 a %eax
+	asm("int $0x80;");
+	register int err asm("eax");
+	if (err < 0) {
+		errno = -err;		
+		return -1;
+	}
+	else return err;
+}
+
 int write (int fd, char * buffer, int size) {	//Write wrapper
 	asm("pushl %ebx;"); //ebx,esi,edi
 	asm("movl 8(%ebp), %ebx;movl 12(%ebp), %ecx;movl 16(%ebp), %edx;");

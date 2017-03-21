@@ -31,7 +31,14 @@ int __attribute__ ((__section__(".text.main")))
 	acum = outer(count);
 	char buffer[]="hello";
 	//gettime();
-	//write(0,buffer,strlen(buffer));
+	//write(1,buffer,strlen(buffer));
+	pid=getpid();
+	itoa(pid,buff);
+	write(1,buff,strlen(buff));
+	while(gettime() < 1000);
+	pid=getpid();
+	itoa(pid,buff);
+	write(1,buff,strlen(buff));
 	//perror();
 	//runjp();
 	//runjp();

@@ -102,6 +102,11 @@ void clock() {
 	zeos_ticks++;
 	zeos_show_clock();
 }
+extern struct task_struct *idle_task;
+void xd() {
+	task_switch((union task_union*)idle_task);
+}
+
 
 void RSR() {
   Byte key = inb(0x60);

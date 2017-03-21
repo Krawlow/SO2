@@ -71,7 +71,8 @@
 ENTRY(keyboard_handler) 
       SAVE_ALL
       EOI
-      call RSR
+      //call RSR
+call xd
       RESTORE_ALL
       iret
 ENTRY(clock_handler)

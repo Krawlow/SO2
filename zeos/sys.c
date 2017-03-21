@@ -36,11 +36,36 @@ int sys_getpid()
 
 int sys_fork()
 {
-  int PID=-1;
+	int PID=-1;
 
-  // creates the child process
-  
-  return PID;
+	if (list_empty(&freequeue)) return -12; /*-61 ENODATA*/ /*-12 ENOMEM*/
+	struct list_head * e = list_first(&freequeue);
+	list_del(e);
+	struct task_struct * t = list_head_to_task_struct(e);
+
+	union task_union *tu = (union task_union*)t;
+	struct task_struct *parent = current();
+	copy_data(parent,t,4096);
+
+  	allocate_DIR(t);
+
+	int page_number_data = alloc_frame();
+	if (page_number==-1) return -12; /*-61 ENODATA*/ /*-12 ENOMEM*/
+
+	page_table_entry *pte = get_PT(t);
+	page_table_entry *ppte = get_PT(parent);
+	copy_data(ppte,pte,TOTAL_PAGES*sizeof(page_table_entry));
+	
+	*pte.entry = 0;
+	*pte.bits.pbase_addr = page_number_data;
+	*pte.bits.user = 1;
+	*pte.bits.present = 1;
+	*pte.bits.rw = 1;
+
+	copy_data(*ppte.bits.pbase_addr,*pte.bits.pbase_addr,/*size*/);
+	
+	
+	return PID;
 }
 
 void sys_exit()
