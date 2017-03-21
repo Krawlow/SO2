@@ -44,6 +44,7 @@ int __attribute__ ((__section__(".text.main")))
 	//runjp();
 	//while(zeos_ticks < 1000);
 	//task_switch(idle);
+	fork();
 	while(1);
 	return(0);
 
