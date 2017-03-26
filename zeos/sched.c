@@ -66,6 +66,8 @@ void init_idle (void)
     list_del(e);
     struct task_struct *t = list_head_to_task_struct(e);
     t->PID=0;
+    t->quantum = QUANTUM;
+    t->info = {0,0,0,0,0,0,0};
     allocate_DIR(t);
     union task_union *tu = (union task_union*)t;
     tu->stack[KERNEL_STACK_SIZE-1] = cpu_idle;
@@ -81,6 +83,8 @@ void init_task1(void)
 	list_del(e);
 	struct task_struct * t = list_head_to_task_struct(e);
 	t->PID=1;
+	t->quantum = QUANTUM;
+	t->info = {0,0,0,0,0,0,0};
 	allocate_DIR(t);
 	set_user_pages(t);
 	union task_union *tu = (union task_union*)t;
@@ -89,7 +93,10 @@ void init_task1(void)
 }
 
 void task_switch(union task_union *t) {
-    asm("pushl %esi; pushl %edi; pushl %ebx");     
+    asm("pushl %esi; pushl %edi; pushl %ebx");
+    t->ready_ticks+=get_ticks()-t->elapsed_total_ticks;
+		t->elapsed_total_ticks = get_ticks();   
+		t->total_trans++;  
     inner_task_switch(t);
     asm("popl %ebx; popl %edi; popl %esi");
 }
@@ -105,9 +112,63 @@ void inner_task_switch(union task_union *t) {
     asm("ret");
 }
 
+unsigned int global_quantum;
+
+struct task_struct *actual = current();
+
+void update_sched_data_rr(void) {
+	global_quantum--;
+	actual->remaining_ticks=global_quantum;
+}
+
+int needs_sched_rr (void) {
+	return global_quantum == 0;
+}
+
+void update_process_state_rr (struct task_struct *t, struct list_head *dst_queue) {
+	if (t == idle_task && list_empty(&readyqueue)); 
+	else if (dst_queue == &readyqueue) {
+		t->state = 2;//2 = READY
+		list_add_tail(dst_queue,&t->list);
+	}
+	else if (dst_queue == &freequeue) {
+		t->state = 0; //0 = ZOMBIE
+		list_add_tail(dst_queue,&t->list);
+	}
+}
+
+extern struct list_head readyqueue;
+void sched_next_rr (void) {
+	if (list_empty(&readyqueue) && current() != idle_task) {
+		task_switch((union task_union*)idle_task);
+	}
+	else {
+		struct list_head * e = list_first(&readyqueue);
+		list_del(e);
+		struct task_struct * t = list_head_to_task_struct(e);
+		t->quantum = QUANTUM;
+		task_switch((union task_union*)t);
+	}
+	global_quantum = QUANTUM;
+} 
 
 void init_sched(){
+}
 
+void scheduling() {
+	update_sched_data_rr();
+	if (needs_sched_rr()){
+		update_process_state_rr(current(),&readyqueue);
+		sched_next_rr();
+	}
+}
+
+int get_quantum (struct task_struct *t) {
+	return t->quantum;
+}
+
+void set_quantum (struct task_struct *t, int new_quantum) {
+	t->quantum = new_quantum;
 }
 
 struct task_struct* current()

@@ -7,10 +7,12 @@
 
 #include <list.h>
 #include <types.h>
+#include <stats.h>
 #include <mm_address.h>
 
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
+#define QUANTUM 100
 
 enum state_t { ST_RUN, ST_READY, ST_BLOCKED };
 
@@ -19,6 +21,9 @@ struct task_struct {
   page_table_entry * dir_pages_baseAddr;
 	struct list_head list; //Queue
 	int ebp_initial_value_pos; //unsigned long?
+	unsigned int quantum;
+	int state; //0 = zombie, 1 = running, 2 = ready
+	struct stats info;
 };
 
 union task_union {

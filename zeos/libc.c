@@ -79,6 +79,17 @@ int write (int fd, char * buffer, int size) {	//Write wrapper
 	else return err;	//S'ha de retornar el "resultat" si es positiu, si es negatiu s'ha de fer lu de errno i retornar -1
 }
 
+void exit(void) {
+	asm("movl $1, %eax"); //Posa 1 a %eax
+	asm("int $0x80;");
+	register int err asm("eax");
+	if (err < 0) {
+		errno = -err;		
+		return -1;
+	}
+	else return err;
+}
+
 int gettime() {
 	asm("movl $10, %eax"); //Posa 10 a %eax
 	asm("int $0x80;");
@@ -88,6 +99,18 @@ int gettime() {
 		return -1;
 	}
 	else return err;
+}
+
+int get_stats (int pid, struct stats *st) {
+	asm("movl 8(%ebp), %ecx;movl 12(%ebp), %edx;");
+	asm("movl $35, %eax"); //Posa 35 a %eax
+	asm("int $0x80;");
+	register int err asm("eax");
+	if (err < 0) {
+		errno = -err;		
+		return -1;
+	}
+	else return 0;
 }
 
 void perror() {

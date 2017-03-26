@@ -99,6 +99,7 @@ void setIdt()
 }
 extern int zeos_ticks;
 void clock() {
+	scheduling();
 	zeos_ticks++;
 	zeos_show_clock();
 }

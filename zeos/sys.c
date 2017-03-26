@@ -13,6 +13,8 @@
 
 #include <sched.h>
 
+#include <stats.h>
+
 #define LECTURA 0
 #define ESCRIPTURA 1
 
@@ -22,29 +24,67 @@ int check_fd(int fd, int permissions)
   if (permissions!=ESCRIPTURA) return -13; /*EACCES*/
   return 0;
 }
+struct task_struct *actual = current();
+
+void system_in() {
+  unsigned int current_ticks = get_ticks();
+	actual->user_ticks+=current_ticks-actual->elapsed_total_ticks;
+	actual->elapsed_total_ticks = current_ticks;
+}
+
+void system_out() {
+	unsigned int current_ticks = get_ticks();
+	actual->system_ticks+=current_ticks-actual->elapsed_total_ticks;
+	actual->elapsed_total_ticks = current_ticks;
+}
 
 int sys_ni_syscall()
 {
-	//printk("Va a una pos de la taula de syscalls invalida");
+	system_in();
+	system_out();
 	return -38; /*ENOSYS*/
+}
+
+int sys_getstats(int pid, struct stats *st) {
+	if (pid < 0) {
+		system_out();
+		return -9; /*EBADF*/
+	}
+	int i;
+	for(i=0;i<NR_TASKS;i++){
+		if(task[i]->PID == pid) {
+			int err = copy_to_user(&current()->info,st,sizeof(struct stats));
+			system_out();
+			return err;
+		}
+	}
+	system_out();
+	return -9; //EBADF
 }
 
 int sys_getpid()
 {
+	system_in();
+	system_out();
 	return current()->PID;
 }
 
 void ret_from_fork() {
-	//jaja
+	system_in();
+	system_out();
 	return 0;
 }
 
 int sys_fork()
 {
+	system_in();
 	int PID=-1;
 	
 	extern struct list_head freequeue;
-	if (list_empty(&freequeue)) return -12; /*-61 ENODATA*/ /*-12 ENOMEM*/
+	if (list_empty(&freequeue)) {
+		system_out();
+		return -12; /*-61 ENODATA*/ /*-12 ENOMEM*/
+	}
 	struct list_head * e = list_first(&freequeue);
 	list_del(e);
 	struct task_struct * t = list_head_to_task_struct(e);
@@ -55,66 +95,76 @@ int sys_fork()
 
   	allocate_DIR(t);
 
-	int page_number_data = alloc_frame();
-	if (page_number_data==-1) return -12; /*-61 ENODATA*/ /*-12 ENOMEM*/
-
+	//?
 	page_table_entry *pte = get_PT(t);
 	page_table_entry *ppte = get_PT(parent);
 	copy_data(ppte,pte,TOTAL_PAGES*sizeof(page_table_entry));
 	
-	/**pte.entry = 0;
-	*pte.bits.pbase_addr = page_number_data;
-	*pte.bits.user = 1;
-	*pte.bits.present = 1;
-	*pte.bits.rw = 1;*/
-	set_ss_pag(pte,0,page_number_data);
-
-	int tmp_page_number = alloc_frame();
-	int restore = (*ppte).bits.pbase_addr;
-	set_ss_pag(ppte,0,tmp_page_number);
-	copy_data((*ppte).bits.pbase_addr,(*pte).bits.pbase_addr,sizeof(page_table_entry));
-	free_frame(tmp_page_number);
-	set_ss_pag(ppte,0,restore);
+	int i;
+	int page_number_data;
+	for(i=0;i<NUM_PAG_DATA;i++){
+		page_number_data = alloc_frame();
+		if (page_number_data==-1) {
+			system_out()
+			return -12; /*-61 ENODATA*/ /*-12 ENOMEM*/
+		}
+		set_ss_pag(pte,pte[PAG_LOG_INIT_DATA+i],page_number_data);
+	}
+	
+	int pag_init_copia_data = NUM_PAG_KERNEL + NUM_PAG_CODE + NUM_PAG_DATA + 1;
+	for(i=0;i<NUM_PAG_DATA;i++){
+		set_ss_pag(ppte,ppte[pag_init_copia_data + i],pte[PAG_LOG_INIT_DATA+i].bits.pbase_addr);
+		copy_data(ppte[PAG_LOG_INIT_DATA + i],ppte[pag_init_copia_data + i],sizeof(page_table_entry));
+		del_ss_pag(ppte,ppte[pag_init_copia_data + i]);
+	}
 	set_cr3(get_DIR(parent));
 
-	int newPID = t->PID + 1;
+	int newPID = t->PID * 2;
 	t->PID = newPID;
+	t->info = {0,0,0,0,0,0,0};
 	PID = newPID;
-	//fields not common to the child?
-	//PID -> changed
-	//list -> ?
-	//dir_pages_baseAddr -> changed doing allocate_DIR(t);
-	//ebp_initial_value_pos -> since the code is the same, this doesn't have to change
-	//stack -> same as ebp?
 
-	//got to know the esp of the current
-	int pebp = parent->ebp_initial_value_pos;
-	tu->stack[pebp+1] = ret_from_fork;
-    	tu->stack[pebp] = 0;
+	tu->stack[KERNEL_STACK_SIZE-19] = 0;
+	tu->stack[KERNEL_STACK_SIZE-18] = ret_from_fork;
+  tu->ebp_initial_pos_value = &tu->stack[KERNEL_STACK_SIZE-19];
 	
 
 	extern struct list_head readyqueue;
 	list_add_tail(&t->list,&readyqueue);
 
-	printk("ei\n");
+	system_out();
 	
 	return PID;
 }
 
 void sys_exit()
 {  
+	system_in();
+	free_user_pages(current());
+	update_process_state_rr(current(),&freequeue);
+	sched_next_rr();
 }
 extern int zeos_ticks;
 int sys_gettime() {
-	//printk("Arriba a fer la syscall de gettime");
+	system_in();
+	system_out();
 	return zeos_ticks;
 }
 
 int sys_write(int fd, char * buffer, int size) {
 	int err = check_fd(fd,ESCRIPTURA);
-	if (check_fd(fd,ESCRIPTURA) != 0) return err;
-	if (buffer == NULL) return -14; //EFAULT
-	if (size < 0) return -22; //EINVAL
+	if (check_fd(fd,ESCRIPTURA) != 0) {
+		system_out();
+		return err;
+	}
+	if (buffer == NULL) {
+		system_out();
+		return -14; //EFAULT
+	}
+	if (size < 0) {
+		system_out();
+		return -22; //EINVAL
+	}
 	char c[10];
 	err = 0;
 	for (int i = 0; i < size; i+=10) {
@@ -130,5 +180,6 @@ int sys_write(int fd, char * buffer, int size) {
 			err += sys_write_console(c,10);
 		}
 	}
+	system_out();
 	return err;	
 }

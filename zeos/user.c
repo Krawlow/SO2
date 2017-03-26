@@ -32,19 +32,18 @@ int __attribute__ ((__section__(".text.main")))
 	char buffer[]="hello";
 	//gettime();
 	//write(1,buffer,strlen(buffer));
-	pid=getpid();
-	itoa(pid,buff);
-	write(1,buff,strlen(buff));
-	while(gettime() < 1000);
-	pid=getpid();
-	itoa(pid,buff);
-	write(1,buff,strlen(buff));
+//	pid=getpid();
+	//itoa(pid,buff);
+//	write(1,buff,strlen(buff));
+	//while(gettime() < 100);
+//	pid=getpid();
+	//itoa(pid,buff);
+	//write(1,buff,strlen(buff));
 	//perror();
-	//runjp();
-	//runjp();
 	//while(zeos_ticks < 1000);
 	//task_switch(idle);
-	fork();
+	//fork();
+	runjp();
 	while(1);
 	return(0);
 

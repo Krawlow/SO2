@@ -105,6 +105,7 @@ int __attribute__((__section__(".text.main")))
 
 	zeos_ticks = 0;
 
+	zeos_init_auxjp();  //joc de proves
   enable_int();
   /*
    * We return from a 'theorical' call to a 'call gate' to reduce our privileges
