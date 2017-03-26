@@ -114,11 +114,9 @@ void inner_task_switch(union task_union *t) {
 
 unsigned int global_quantum;
 
-struct task_struct *actual = current();
-
 void update_sched_data_rr(void) {
 	global_quantum--;
-	actual->remaining_ticks=global_quantum;
+	current()->remaining_ticks=global_quantum;
 }
 
 int needs_sched_rr (void) {
