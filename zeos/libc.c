@@ -102,9 +102,11 @@ int gettime() {
 }
 
 int get_stats (int pid, struct stats *st) {
-	asm("movl 8(%ebp), %ecx;movl 12(%ebp), %edx;");
+	asm("pushl %ebx;");
+	asm("movl 8(%ebp), %ebx;movl 12(%ebp), %ecx;");
 	asm("movl $35, %eax"); //Posa 35 a %eax
 	asm("int $0x80;");
+	asm("popl %ebx;");
 	register int err asm("eax");
 	if (err < 0) {
 		errno = -err;		

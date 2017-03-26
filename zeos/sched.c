@@ -67,7 +67,13 @@ void init_idle (void)
     struct task_struct *t = list_head_to_task_struct(e);
     t->PID=0;
     t->quantum = QUANTUM;
-    t->info = {0,0,0,0,0,0,0};
+    t->info.user_ticks = 0;
+    t->info.system_ticks = 0;
+    t->info.blocked_ticks = 0;
+    t->info.ready_ticks = 0;
+    t->info.elapsed_total_ticks = 0;
+    t->info.total_trans = 0;
+    t->info.remaining_ticks = 0;
     allocate_DIR(t);
     union task_union *tu = (union task_union*)t;
     tu->stack[KERNEL_STACK_SIZE-1] = cpu_idle;
@@ -84,7 +90,13 @@ void init_task1(void)
 	struct task_struct * t = list_head_to_task_struct(e);
 	t->PID=1;
 	t->quantum = QUANTUM;
-	t->info = {0,0,0,0,0,0,0};
+	t->info.user_ticks = 0;
+  t->info.system_ticks = 0;
+  t->info.blocked_ticks = 0;
+  t->info.ready_ticks = 0;
+  t->info.elapsed_total_ticks = 0;
+  t->info.total_trans = 0;
+  t->info.remaining_ticks = 0;
 	allocate_DIR(t);
 	set_user_pages(t);
 	union task_union *tu = (union task_union*)t;
@@ -94,9 +106,10 @@ void init_task1(void)
 
 void task_switch(union task_union *t) {
     asm("pushl %esi; pushl %edi; pushl %ebx");
-    t->ready_ticks+=get_ticks()-t->elapsed_total_ticks;
-		t->elapsed_total_ticks = get_ticks();   
-		t->total_trans++;  
+    int tiqs = get_ticks();
+    t->task.info.ready_ticks+=tiqs-t->task.info.elapsed_total_ticks;
+		t->task.info.elapsed_total_ticks = tiqs;   
+		t->task.info.total_trans++;  
     inner_task_switch(t);
     asm("popl %ebx; popl %edi; popl %esi");
 }
@@ -116,12 +129,13 @@ unsigned int global_quantum;
 
 void update_sched_data_rr(void) {
 	global_quantum--;
-	current()->remaining_ticks=global_quantum;
+	current()->info.remaining_ticks=global_quantum;
 }
 
 int needs_sched_rr (void) {
 	return global_quantum == 0;
 }
+extern struct list_head readyqueue;
 
 void update_process_state_rr (struct task_struct *t, struct list_head *dst_queue) {
 	if (t == idle_task && list_empty(&readyqueue)); 
@@ -135,7 +149,7 @@ void update_process_state_rr (struct task_struct *t, struct list_head *dst_queue
 	}
 }
 
-extern struct list_head readyqueue;
+
 void sched_next_rr (void) {
 	if (list_empty(&readyqueue) && current() != idle_task) {
 		task_switch((union task_union*)idle_task);

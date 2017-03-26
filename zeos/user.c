@@ -43,7 +43,8 @@ int __attribute__ ((__section__(".text.main")))
 	//while(zeos_ticks < 1000);
 	//task_switch(idle);
 	//fork();
-	runjp();
+	//runjp();
+	runjp_rank(4,4);
 	while(1);
 	return(0);
 

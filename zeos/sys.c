@@ -24,18 +24,19 @@ int check_fd(int fd, int permissions)
   if (permissions!=ESCRIPTURA) return -13; /*EACCES*/
   return 0;
 }
-struct task_struct *actual = current();
 
 void system_in() {
+	struct task_struct *actual = current();
   unsigned int current_ticks = get_ticks();
-	actual->user_ticks+=current_ticks-actual->elapsed_total_ticks;
-	actual->elapsed_total_ticks = current_ticks;
+	actual->info.user_ticks+=current_ticks-actual->info.elapsed_total_ticks;
+	actual->info.elapsed_total_ticks = current_ticks;
 }
 
 void system_out() {
+	struct task_struct *actual = current();
 	unsigned int current_ticks = get_ticks();
-	actual->system_ticks+=current_ticks-actual->elapsed_total_ticks;
-	actual->elapsed_total_ticks = current_ticks;
+	actual->info.system_ticks+=current_ticks-actual->info.elapsed_total_ticks;
+	actual->info.elapsed_total_ticks = current_ticks;
 }
 
 int sys_ni_syscall()
@@ -52,7 +53,7 @@ int sys_getstats(int pid, struct stats *st) {
 	}
 	int i;
 	for(i=0;i<NR_TASKS;i++){
-		if(task[i]->PID == pid) {
+		if(task[i].task.PID == pid) {
 			int err = copy_to_user(&current()->info,st,sizeof(struct stats));
 			system_out();
 			return err;
@@ -74,13 +75,13 @@ void ret_from_fork() {
 	system_out();
 	return 0;
 }
-
+extern struct list_head freequeue;
 int sys_fork()
 {
 	system_in();
 	int PID=-1;
 	
-	extern struct list_head freequeue;
+	
 	if (list_empty(&freequeue)) {
 		system_out();
 		return -12; /*-61 ENODATA*/ /*-12 ENOMEM*/
@@ -105,28 +106,34 @@ int sys_fork()
 	for(i=0;i<NUM_PAG_DATA;i++){
 		page_number_data = alloc_frame();
 		if (page_number_data==-1) {
-			system_out()
+			system_out();
 			return -12; /*-61 ENODATA*/ /*-12 ENOMEM*/
 		}
-		set_ss_pag(pte,pte[PAG_LOG_INIT_DATA+i],page_number_data);
+		set_ss_pag(pte,PAG_LOG_INIT_DATA+i,page_number_data);
 	}
 	
 	int pag_init_copia_data = NUM_PAG_KERNEL + NUM_PAG_CODE + NUM_PAG_DATA + 1;
 	for(i=0;i<NUM_PAG_DATA;i++){
-		set_ss_pag(ppte,ppte[pag_init_copia_data + i],pte[PAG_LOG_INIT_DATA+i].bits.pbase_addr);
-		copy_data(ppte[PAG_LOG_INIT_DATA + i],ppte[pag_init_copia_data + i],sizeof(page_table_entry));
-		del_ss_pag(ppte,ppte[pag_init_copia_data + i]);
+		set_ss_pag(ppte,pag_init_copia_data + i,pte[PAG_LOG_INIT_DATA+i].bits.pbase_addr);
+		copy_data(&ppte[PAG_LOG_INIT_DATA + i],&ppte[pag_init_copia_data + i],sizeof(page_table_entry));
+		del_ss_pag(ppte,pag_init_copia_data + i);
 	}
 	set_cr3(get_DIR(parent));
 
 	int newPID = t->PID * 2;
 	t->PID = newPID;
-	t->info = {0,0,0,0,0,0,0};
+	t->info.user_ticks = 0;
+  t->info.system_ticks = 0;
+  t->info.blocked_ticks = 0;
+  t->info.ready_ticks = 0;
+  t->info.elapsed_total_ticks = 0;
+  t->info.total_trans = 0;
+  t->info.remaining_ticks = 0;
 	PID = newPID;
 
 	tu->stack[KERNEL_STACK_SIZE-19] = 0;
 	tu->stack[KERNEL_STACK_SIZE-18] = ret_from_fork;
-  tu->ebp_initial_pos_value = &tu->stack[KERNEL_STACK_SIZE-19];
+  t->ebp_initial_value_pos = &tu->stack[KERNEL_STACK_SIZE-19];
 	
 
 	extern struct list_head readyqueue;
