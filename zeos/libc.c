@@ -51,7 +51,7 @@ int fork (void) {
 		errno = -err;		
 		return -1;
 	}
-	else return err;
+	else return err; //l'stack es buida!? ebp no existeix i ret tampoc STACK BUIDAA PARKEEEE AAAA 
 }
 
 int getpid(void) {

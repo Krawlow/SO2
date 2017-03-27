@@ -38,6 +38,7 @@ int __attribute__ ((__section__(".text.main")))
 	//while(gettime() < 100);
 //	pid=getpid();
 	//itoa(pid,buff);
+	//fork();
 	//write(1,buff,strlen(buff));
 	//perror();
 	//while(zeos_ticks < 1000);

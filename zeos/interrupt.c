@@ -104,8 +104,9 @@ void clock() {
 	zeos_show_clock();
 }
 extern struct task_struct *idle_task;
+extern struct task_struct *fork_task;
 void xd() {
-	task_switch((union task_union*)idle_task);
+	task_switch((union task_union*)fork_task);
 }
 
 

@@ -83,6 +83,7 @@ ENTRY(clock_handler)
 	  iret
 ENTRY(system_call_handler)
 	  SAVE_ALL
+	  //call xd
 	  cmpl $0, %eax				//Negative syscall number
 	  jl err
 	  cmpl $MAX_SYSCALL, %eax	//Out of bounds

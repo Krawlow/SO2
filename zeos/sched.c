@@ -96,7 +96,7 @@ void init_task1(void)
   t->info.ready_ticks = 0;
   t->info.elapsed_total_ticks = 0;
   t->info.total_trans = 0;
-  t->info.remaining_ticks = 0;
+  t->info.remaining_ticks = QUANTUM;
 	allocate_DIR(t);
 	set_user_pages(t);
 	union task_union *tu = (union task_union*)t;
@@ -137,11 +137,11 @@ void update_process_state_rr (struct task_struct *t, struct list_head *dst_queue
 	if (t == idle_task && list_empty(&readyqueue)); 
 	else if (dst_queue == &readyqueue) {
 		t->state = 2;//2 = READY
-		list_add_tail(dst_queue,&t->list);
+		list_add_tail(&t->list,dst_queue);
 	}
 	else if (dst_queue == &freequeue) {
 		t->state = 0; //0 = ZOMBIE
-		list_add_tail(dst_queue,&t->list);
+		list_add_tail(&t->list,dst_queue);
 	}
 }
 
@@ -154,18 +154,19 @@ void sched_next_rr (void) {
 		struct list_head * e = list_first(&readyqueue);
 		list_del(e);
 		struct task_struct * t = list_head_to_task_struct(e);
-		t->quantum = QUANTUM; //may not be needed
 		int tiqs = get_ticks();
-    		t->info.ready_ticks+=tiqs-t->info.elapsed_total_ticks;
+    t->info.ready_ticks+=tiqs-t->info.elapsed_total_ticks;
 		t->info.elapsed_total_ticks = tiqs;   
 		t->info.total_trans++; 
-		t->info.remaining_ticks = get_quantum(t); 
+		t->info.remaining_ticks = get_quantum(t);
+		t->state = 1; 
+		global_quantum = get_quantum(t);
 		task_switch((union task_union*)t);
 	}
-	global_quantum = QUANTUM;
 } 
 
 void init_sched(){
+	global_quantum = QUANTUM;
 }
 
 void scheduling() {
