@@ -44,7 +44,7 @@ int __attribute__ ((__section__(".text.main")))
 	//task_switch(idle);
 	//fork();
 	//runjp();
-	runjp_rank(4,4);
+	runjp_rank(0,31);
 	while(1);
 	return(0);
 

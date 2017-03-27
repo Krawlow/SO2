@@ -112,10 +112,10 @@ int sys_fork()
 		set_ss_pag(pte,PAG_LOG_INIT_DATA+i,page_number_data);
 	}
 	
-	int pag_init_copia_data = NUM_PAG_KERNEL + NUM_PAG_CODE + NUM_PAG_DATA + 1;
+	int pag_init_copia_data = PAG_LOG_INIT_DATA + NUM_PAG_DATA;
 	for(i=0;i<NUM_PAG_DATA;i++){
 		set_ss_pag(ppte,pag_init_copia_data + i,pte[PAG_LOG_INIT_DATA+i].bits.pbase_addr);
-		copy_data(&ppte[PAG_LOG_INIT_DATA + i],&ppte[pag_init_copia_data + i],sizeof(page_table_entry));
+		copy_data((void*)((PAG_LOG_INIT_DATA + i)<<12),(void*)((pag_init_copia_data + i)<<12),sizeof(page_table_entry));
 		del_ss_pag(ppte,pag_init_copia_data + i);
 	}
 	set_cr3(get_DIR(parent));

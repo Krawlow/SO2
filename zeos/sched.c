@@ -106,10 +106,6 @@ void init_task1(void)
 
 void task_switch(union task_union *t) {
     asm("pushl %esi; pushl %edi; pushl %ebx");
-    int tiqs = get_ticks();
-    t->task.info.ready_ticks+=tiqs-t->task.info.elapsed_total_ticks;
-		t->task.info.elapsed_total_ticks = tiqs;   
-		t->task.info.total_trans++;  
     inner_task_switch(t);
     asm("popl %ebx; popl %edi; popl %esi");
 }
@@ -158,7 +154,12 @@ void sched_next_rr (void) {
 		struct list_head * e = list_first(&readyqueue);
 		list_del(e);
 		struct task_struct * t = list_head_to_task_struct(e);
-		t->quantum = QUANTUM;
+		t->quantum = QUANTUM; //may not be needed
+		int tiqs = get_ticks();
+    		t->info.ready_ticks+=tiqs-t->info.elapsed_total_ticks;
+		t->info.elapsed_total_ticks = tiqs;   
+		t->info.total_trans++; 
+		t->info.remaining_ticks = get_quantum(t); 
 		task_switch((union task_union*)t);
 	}
 	global_quantum = QUANTUM;
