@@ -55,6 +55,7 @@ void cpu_idle(void)
 
 	while(1)
 	{
+	//printk("idle");
 	;
 	}
 }
@@ -73,7 +74,7 @@ void init_idle (void)
     t->info.ready_ticks = 0;
     t->info.elapsed_total_ticks = 0;
     t->info.total_trans = 0;
-    t->info.remaining_ticks = 0;
+    t->info.remaining_ticks = QUANTUM;
     allocate_DIR(t);
     union task_union *tu = (union task_union*)t;
     tu->stack[KERNEL_STACK_SIZE-1] = cpu_idle;
@@ -134,32 +135,37 @@ int needs_sched_rr (void) {
 extern struct list_head readyqueue;
 
 void update_process_state_rr (struct task_struct *t, struct list_head *dst_queue) {
-	if (t == idle_task && list_empty(&readyqueue)); 
+	if (t == idle_task); 
 	else if (dst_queue == &readyqueue) {
 		t->state = 2;//2 = READY
-		list_add_tail(&t->list,dst_queue);
 	}
 	else if (dst_queue == &freequeue) {
 		t->state = 0; //0 = ZOMBIE
-		list_add_tail(&t->list,dst_queue);
 	}
+	else {
+		t->state = 3; //3 = BLOCKED
+	}	
+	list_add_tail(&t->list,dst_queue);
 }
 
 
 void sched_next_rr (void) {
-	if (list_empty(&readyqueue) && current() != idle_task) {
-		task_switch((union task_union*)idle_task);
+	if (list_empty(&readyqueue)) {
+		if (current() != idle_task) {
+			global_quantum = QUANTUM;
+			task_switch((union task_union*)idle_task);
+		}
 	}
 	else {
 		struct list_head * e = list_first(&readyqueue);
 		list_del(e);
 		struct task_struct * t = list_head_to_task_struct(e);
 		int tiqs = get_ticks();
-    t->info.ready_ticks+=tiqs-t->info.elapsed_total_ticks;
+		t->info.ready_ticks+=tiqs-t->info.elapsed_total_ticks;
 		t->info.elapsed_total_ticks = tiqs;   
 		t->info.total_trans++; 
 		t->info.remaining_ticks = get_quantum(t);
-		t->state = 1; 
+		t->state = 1; //1 = RUN
 		global_quantum = get_quantum(t);
 		task_switch((union task_union*)t);
 	}

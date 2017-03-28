@@ -26,67 +26,68 @@ int check_fd(int fd, int permissions)
 }
 
 void system_in() {
+	asm("pushl %eax");
 	struct task_struct *actual = current();
-  unsigned int current_ticks = get_ticks();
+  	unsigned int current_ticks = get_ticks();
 	actual->info.user_ticks+=current_ticks-actual->info.elapsed_total_ticks;
 	actual->info.elapsed_total_ticks = current_ticks;
+	asm("popl %eax");
 }
 
 void system_out() {
+	asm("pushl %eax");
 	struct task_struct *actual = current();
 	unsigned int current_ticks = get_ticks();
 	actual->info.system_ticks+=current_ticks-actual->info.elapsed_total_ticks;
 	actual->info.elapsed_total_ticks = current_ticks;
+	asm("popl %eax");
 }
 
 int sys_ni_syscall()
 {
-	system_in();
-	system_out();
 	return -38; /*ENOSYS*/
 }
 
 int sys_getstats(int pid, struct stats *st) {
 	if (pid < 0) {
-		system_out();
-		return -9; /*EBADF*/
+		return -22; /*EINVAL*/
+	}
+	if (st == NULL) {
+		return -14; /*EFAULT*/
+	}
+	if (st > 0x108000 + NUM_PAG_DATA*PAGE_SIZE || st < 0x108000) {
+		return -14; /*EFAULT*/
 	}
 	int i;
 	for(i=0;i<NR_TASKS;i++){
 		if(task[i].task.PID == pid) {
-			int err = copy_to_user(&current()->info,st,sizeof(struct stats));
-			system_out();
-			return err;
+			if (task[i].task.state == 0) return 0;
+			else {
+				int err = copy_to_user(&current()->info,st,sizeof(struct stats));
+				return err;
+			}
 		}
 	}
-	system_out();
-	return -9; //EBADF
+	return -3; /*ESRCH*/
 }
 
 int sys_getpid()
 {
-	system_in();
-	system_out();
 	return current()->PID;
 }
 
-void ret_from_fork() {
-	system_in();
-	system_out();
+int ret_from_fork() {
 	return 0;
 }
 extern struct list_head freequeue;
 struct task_struct *fork_task;
 int sys_fork()
 {
-	
-	system_in();
 	int PID=-1;
 	
 	
 	
 	if (list_empty(&freequeue)) {
-		system_out();
 		return -12; 
 	}
 	struct list_head * e = list_first(&freequeue);
@@ -110,7 +111,6 @@ int sys_fork()
 	for(i=0;i<NUM_PAG_DATA;i++){
 		page_number_data = alloc_frame();
 		if (page_number_data==-1) {
-			system_out();
 			return -12; 
 		}
 		set_ss_pag(pte,PAG_LOG_INIT_DATA+i,page_number_data);
@@ -138,43 +138,35 @@ int sys_fork()
 	
 
 	extern struct list_head readyqueue;
-	list_add_tail(&t->list,&readyqueue);
+	update_process_state_rr(t,&readyqueue);
 	
 	//set_cr3(get_DIR(t));
 	
 	fork_task = t;
-
-	system_out();
 	
 	return PID;
 }
 
 void sys_exit()
 {  
-	system_in();
 	free_user_pages(current());
 	update_process_state_rr(current(),&freequeue);
 	sched_next_rr();
 }
 extern int zeos_ticks;
 int sys_gettime() {
-	system_in();
-	system_out();
 	return zeos_ticks;
 }
 
 int sys_write(int fd, char * buffer, int size) {
 	int err = check_fd(fd,ESCRIPTURA);
 	if (check_fd(fd,ESCRIPTURA) != 0) {
-		system_out();
 		return err;
 	}
 	if (buffer == NULL) {
-		system_out();
 		return -14; //EFAULT
 	}
 	if (size < 0) {
-		system_out();
 		return -22; //EINVAL
 	}
 	char c[10];
@@ -192,6 +184,5 @@ int sys_write(int fd, char * buffer, int size) {
 			err += sys_write_console(c,10);
 		}
 	}
-	system_out();
 	return err;	
 }

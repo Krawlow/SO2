@@ -71,8 +71,7 @@
 ENTRY(keyboard_handler) 
       SAVE_ALL
       EOI
-      //call RSR
-call xd
+      call RSR
       RESTORE_ALL
       iret
 ENTRY(clock_handler)
@@ -83,16 +82,18 @@ ENTRY(clock_handler)
 	  iret
 ENTRY(system_call_handler)
 	  SAVE_ALL
-	  //call xd
 	  cmpl $0, %eax				//Negative syscall number
 	  jl err
 	  cmpl $MAX_SYSCALL, %eax	//Out of bounds
 	  jg err
+	  call system_in
 	  call *sys_call_table(, %eax, 0x04);	//Calling the sys call
 	  jmp fin
 err:
+	  call system_out
 	  movl $-38, %eax		//Returns an ENOSYS
 fin:
+	  call system_out
 	  movl %eax, 0x18(%esp) //push %eax
 	  RESTORE_ALL
 	  iret

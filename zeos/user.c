@@ -43,10 +43,16 @@ int __attribute__ ((__section__(".text.main")))
 	//perror();
 	//while(zeos_ticks < 1000);
 	//task_switch(idle);
-	//fork();
+//	char *p;
+//	if (fork() ==0) exit();
+//	else exit();
+//while(1){write(1,p,strlen(p));};
 	//runjp();
-	runjp_rank(0,31);
-	while(1);
+	runjp_rank(27,27);
+//	int it = 1000000;
+//	while(0!=it--){write(1,p,strlen(p));}
+//	if (p == "fill")exit();
+	exit();
 	return(0);
 
 
