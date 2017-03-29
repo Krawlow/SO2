@@ -47,12 +47,16 @@ int __attribute__ ((__section__(".text.main")))
 //	if (fork() ==0) exit();
 //	else exit();
 //while(1){write(1,p,strlen(p));};
-	//runjp();
-	runjp_rank(27,27);
+	runjp();
+	//runjp_rank(21,21); //21 bad ?? sometimes bad sometimes good?
+	//runjp_rank(27,27); //27 bad
+	//runjp_rank(25,25); //25 bad
+	
+	
 //	int it = 1000000;
 //	while(0!=it--){write(1,p,strlen(p));}
 //	if (p == "fill")exit();
-	exit();
+	exit(); //while(1);
 	return(0);
 
 

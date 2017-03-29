@@ -22,7 +22,7 @@ struct task_struct {
 	struct list_head list; //Queue
 	int ebp_initial_value_pos; //unsigned long?
 	unsigned int quantum;
-	int state; //0 = zombie, 1 = running, 2 = ready
+	int state; //0 = zombie, 1 = running, 2 = ready, 3 = blocked
 	struct stats info;
 };
 
