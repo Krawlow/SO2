@@ -15,13 +15,15 @@
 
 #include <stats.h>
 
+#include <errno.h>
+
 #define LECTURA 0
 #define ESCRIPTURA 1
 
 int check_fd(int fd, int permissions)
 {
-  if (fd!=1) return -9; /*EBADF*/
-  if (permissions!=ESCRIPTURA) return -13; /*EACCES*/
+  if (fd!=1) return -EBADF;
+  if (permissions!=ESCRIPTURA) return -EACCES;
   return 0;
 }
 
@@ -45,30 +47,32 @@ void system_out() {
 
 int sys_ni_syscall()
 {
-	return -38; /*ENOSYS*/
+	return -ENOSYS;
 }
 
+extern unsigned int global_quantum;
+
 int sys_getstats(int pid, struct stats *st) {
-	if (pid < 0) {
-		return -22; /*EINVAL*/
-	}
-	if (st == NULL) {
-		return -14; /*EFAULT*/
+
+	if (!access_ok(VERIFY_WRITE, st, sizeof(struct stats))) return -EFAULT;
+	/*if (st == NULL) {
+		return -EFAULT;
 	}
 	if (st > 0x108000 + NUM_PAG_DATA*PAGE_SIZE || st < 0x108000) {
-		return -14; /*EFAULT*/
-	}
+		return -EFAULT;
+	}*/
+	
+	if (pid < 0) return -EINVAL;
+	
 	int i;
 	for(i=0;i<NR_TASKS;i++){
 		if(task[i].task.PID == pid) {
-			if (task[i].task.state == 0) return 0;
-			else {
-				int err = copy_to_user(&current()->info,st,sizeof(struct stats));
-				return err;
-			}
+			task[i].task.info.remaining_ticks=global_quantum;
+			copy_to_user(&current()->info,st,sizeof(struct stats));
+			return 0;
 		}
 	}
-	return -3; /*ESRCH*/
+	return -ESRCH;
 }
 
 int sys_getpid()
@@ -85,11 +89,8 @@ int sys_fork()
 {
 	int PID=-1;
 	
+	if (list_empty(&freequeue)) return -ENOMEM;
 	
-	
-	if (list_empty(&freequeue)) {
-		return -12; 
-	}
 	struct list_head * e = list_first(&freequeue);
 	list_del(e);
 	struct task_struct * t = list_head_to_task_struct(e);
@@ -111,7 +112,14 @@ int sys_fork()
 	for(i=0;i<NUM_PAG_DATA;i++){
 		page_number_data = alloc_frame();
 		if (page_number_data==-1) {
-			return -12; 
+			int j;
+			for (j=0; j<i; j++)
+      {
+        free_frame(get_frame(pte, PAG_LOG_INIT_DATA+j));
+        del_ss_pag(pte, PAG_LOG_INIT_DATA+j);
+      }
+      list_add_tail(e, &freequeue);
+			return -EAGAIN; 
 		}
 		set_ss_pag(pte,PAG_LOG_INIT_DATA+i,page_number_data);
 		set_ss_pag(ppte,pag_init_copia_data + i,pte[PAG_LOG_INIT_DATA+i].bits.pbase_addr);
@@ -151,6 +159,7 @@ void sys_exit()
 {  
 	free_user_pages(current());
 	update_process_state_rr(current(),&freequeue);
+	current()->PID=-1;
 	sched_next_rr();
 }
 extern int zeos_ticks;

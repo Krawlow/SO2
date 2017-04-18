@@ -44,80 +44,100 @@ int strlen(char *a)
 }
 
 int fork (void) {
-	asm("movl $2, %eax"); //Posa 2 a %eax
-	asm("int $0x80;");
-	register int err asm("eax");
-	if (err < 0) {
-		errno = -err;		
-		return -1;
-	}
-	else return err; //l'stack es buida!? ebp no existeix i ret tampoc STACK BUIDAA PARKEEEE AAAA 
+	int result;
+  
+  __asm__ __volatile__ (
+  	"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (2) );
+  if (result<0)
+  {
+    errno = -result;
+    return -1;
+  }
+  errno=0;
+  return result;
 }
 
 int getpid(void) {
-	asm("movl $20, %eax"); //Posa 20 a %eax
-	asm("int $0x80;");
-	register int err asm("eax");
-	if (err < 0) {
-		errno = -err;		
-		return -1;
-	}
-	else return err;
+	int result;
+  
+  __asm__ __volatile__ (
+  	"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (20) );
+  errno=0;
+  return result;
 }
 
 int write (int fd, char * buffer, int size) {	//Write wrapper
-	asm("pushl %ebx;"); //ebx,esi,edi
-	asm("movl 8(%ebp), %ebx;movl 12(%ebp), %ecx;movl 16(%ebp), %edx;");
-	asm("movl $4, %eax"); //Posa 4 a %eax
-	asm("int $0x80;");
-	asm("popl %ebx;");
-	register int err asm("eax");
-	if (err < 0) {
-		errno = -err;		
-		return -1;
-	}
-	else return err;	//S'ha de retornar el "resultat" si es positiu, si es negatiu s'ha de fer lu de errno i retornar -1
+	int result;
+  
+  __asm__ __volatile__ (
+	"int $0x80\n\t"
+	: "=a" (result)
+	: "a" (4), "b" (fd), "c" (buffer), "d" (size));
+  if (result<0)
+  {
+    errno = -result;
+    return -1;
+  }
+  errno=0;
+  return result;
 }
 
 void exit(void) {
-	asm("movl $1, %eax"); //Posa 1 a %eax
-	asm("int $0x80;");
-	register int err asm("eax");
-	if (err < 0) {
-		errno = -err;		
-		return -1;
-	}
-	else return err;
+	__asm__ __volatile__ (
+  	"int $0x80\n\t"
+	:
+	:"a" (1) );
 }
 
 int gettime() {
-	asm("movl $10, %eax"); //Posa 10 a %eax
-	asm("int $0x80;");
-	register int err asm("eax");
-	if (err < 0) {
-		errno = -err;		
-		return -1;
-	}
-	else return err;
+  int result;
+  
+  __asm__ __volatile__ (
+	"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (10) );
+  errno=0;
+  return result;
 }
 
 int get_stats (int pid, struct stats *st) {
-	asm("pushl %ebx;");
-	asm("movl 8(%ebp), %ebx;movl 12(%ebp), %ecx;");
-	asm("movl $35, %eax"); //Posa 35 a %eax
-	asm("int $0x80;");
-	asm("popl %ebx;");
-	register int err asm("eax");
-	if (err < 0) {
-		errno = -err;		
-		return -1;
-	}
-	else return 0;
+	int result;
+  __asm__ __volatile__ (
+  	"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (35), "b" (pid), "c" (st) );
+  if (result<0)
+  {
+    errno = -result;
+    return -1;
+  }
+  errno=0;
+  return result;
 }
 
 void perror() {
-	char b[20];
+	char b[256];
 	itoa(errno,b);
 	write(1,b,strlen(b));
 }
+
+int clone (void (*function)(void), void *stack) {
+	int result;
+	__asm__ __volatile__ (
+		"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (19), "b" (function), "c" (stack) );
+	if (result<0)
+	{
+		errno = -result;
+		return -1;
+	}
+	errno=0;
+	return result;
+}		
+
 
