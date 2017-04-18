@@ -24,6 +24,7 @@ struct task_struct {
 	unsigned int quantum;
 	int state; //0 = zombie, 1 = running, 2 = ready, 3 = blocked
 	struct stats info;
+	int dir;
 };
 
 union task_union {

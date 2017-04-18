@@ -9,6 +9,7 @@
 #include <sched.h>
 
 Byte phys_mem[TOTAL_PAGES];
+Byte dir_used[NR_TASKS];
 
 /* SEGMENTATION */
 /* Memory segements description table */
@@ -46,6 +47,8 @@ for (i = 0; i< NR_TASKS; i++) {
   dir_pages[i][ENTRY_DIR_PAGES].bits.user = 1;
   dir_pages[i][ENTRY_DIR_PAGES].bits.rw = 1;
   dir_pages[i][ENTRY_DIR_PAGES].bits.present = 1;
+
+	dir_used[i] = 0;
 
 }
 

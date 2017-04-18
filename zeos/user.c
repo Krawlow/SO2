@@ -47,8 +47,8 @@ int __attribute__ ((__section__(".text.main")))
 //	if (fork() ==0) exit();
 //	else exit();
 //while(1){write(1,p,strlen(p));};
-	runjp();
-	//runjp_rank(21,21); //21 bad ?? sometimes bad sometimes good?
+	//runjp();
+	runjp_rank(18,18); //21 bad ?? sometimes bad sometimes good?
 	//runjp_rank(27,27); //27 bad
 	//runjp_rank(25,25); //25 bad
 	

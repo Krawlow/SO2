@@ -139,5 +139,18 @@ int clone (void (*function)(void), void *stack) {
 	errno=0;
 	return result;
 }		
-
+int sem_init (int n_sem, unsigned int value) {
+	int result;
+	__asm__ __volatile__ (
+		"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (21), "b" (n_sem), "c" (value) );
+	if (result<0)
+	{
+		errno = -result;
+		return -1;
+	}
+	errno=0;
+	return result;
+}
 

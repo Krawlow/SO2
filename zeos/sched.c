@@ -37,16 +37,19 @@ page_table_entry * get_PT (struct task_struct *t)
 	return (page_table_entry *)(((unsigned int)(t->dir_pages_baseAddr->bits.pbase_addr))<<12);
 }
 
-
 int allocate_DIR(struct task_struct *t) 
 {
-	int pos;
+	int i;
 
-	pos = ((int)t-(int)task)/sizeof(union task_union);
-
-	t->dir_pages_baseAddr = (page_table_entry*) &dir_pages[pos]; 
-
-	return 1;
+	for (i=0;i<NR_TASKS;++i){
+		if (dir_used[i] == 0) {
+			t->dir_pages_baseAddr = (page_table_entry*) &dir_pages[i];
+			dir_used[i]++;
+			t->dir = i;
+			return 1;
+		}
+	}
+	return -1;
 }
 
 void cpu_idle(void)
