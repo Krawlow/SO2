@@ -44,21 +44,29 @@ int allocate_DIR(struct task_struct *t)
 	for (i=0;i<NR_TASKS;++i){
 		if (dir_used[i] == 0) {
 			t->dir_pages_baseAddr = (page_table_entry*) &dir_pages[i];
-			dir_used[i]++;
+			++dir_used[i];
 			t->dir = i;
 			return 1;
 		}
 	}
 	return -1;
+	
+	/*int pos;
+
+	pos = ((int)t-(int)task)/sizeof(union task_union);
+
+	t->dir_pages_baseAddr = (page_table_entry*) &dir_pages[pos]; 
+
+	return 1;*/
 }
 
 void cpu_idle(void)
 {
 	__asm__ __volatile__("sti": : :"memory");
 
+	printk("idle");
 	while(1)
 	{
-	//printk("idle");
 	;
 	}
 }
@@ -110,6 +118,7 @@ void init_task1(void)
 
 void task_switch(union task_union *t) {
     asm("pushl %esi; pushl %edi; pushl %ebx");
+    printk("\n\ntask switch\n\n");
     inner_task_switch(t);
     asm("popl %ebx; popl %edi; popl %esi");
 }

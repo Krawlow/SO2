@@ -22,6 +22,11 @@ long outer(long n)
 	return acum;
 }
 
+void func() {
+	write(1,"codi del clon\n",14);
+	exit();
+}
+
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
@@ -48,7 +53,7 @@ int __attribute__ ((__section__(".text.main")))
 //	else exit();
 //while(1){write(1,p,strlen(p));};
 	//runjp();
-	runjp_rank(18,18); //21 bad ?? sometimes bad sometimes good?
+	//runjp_rank(18,18); //21 bad ?? sometimes bad sometimes good?
 	//runjp_rank(27,27); //27 bad
 	//runjp_rank(25,25); //25 bad
 	
@@ -56,6 +61,14 @@ int __attribute__ ((__section__(".text.main")))
 //	int it = 1000000;
 //	while(0!=it--){write(1,p,strlen(p));}
 //	if (p == "fill")exit();
+	char c[100];
+	int i, pid, fff, ccc;
+	for(i=0;i<6;i++) {
+	fff=fork();
+	if(fff<0) write(1,"unable to fork|||",strlen("unable to fork|||"));
+	ccc=clone(func,&c[99]);
+	if(ccc<0) write(1,"unable to clone|||",strlen("unable to clone|||"));
+	}
 	exit(); //while(1);
 	return(0);
 
@@ -64,3 +77,4 @@ int __attribute__ ((__section__(".text.main")))
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
 }
+

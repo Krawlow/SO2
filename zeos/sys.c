@@ -27,6 +27,8 @@ int check_fd(int fd, int permissions)
   return 0;
 }
 
+int global_PID = 1000;
+
 void system_in() {
 	asm("pushl %eax");
 	struct task_struct *actual = current();
@@ -128,8 +130,7 @@ int sys_fork()
 	}
 	set_cr3(get_DIR(parent));
 
-	int newPID = t->PID * 2;
-	t->PID = newPID;
+	t->PID = ++global_PID;
 	t->info.user_ticks = 0;
   t->info.system_ticks = 0;
   t->info.blocked_ticks = 0;
@@ -138,7 +139,6 @@ int sys_fork()
   t->info.total_trans = 0;
   t->info.remaining_ticks = 0;
   t->state = 2;
-	PID = newPID;
 
 	tu->stack[KERNEL_STACK_SIZE-19] = 0;
 	tu->stack[KERNEL_STACK_SIZE-18] = ret_from_fork;
@@ -152,13 +152,15 @@ int sys_fork()
 	
 	fork_task = t;
 	
-	return PID;
+	return t->PID;
 }
 
 int sys_clone(void (*function)(void), void *stack) {
 	int PID=-1;
 	
 	if (list_empty(&freequeue)) return -ENOMEM;
+	
+	if (!access_ok(VERIFY_WRITE, stack, 4) || !access_ok(VERIFY_READ, function, 4)) return -EFAULT;
 	
 	struct list_head * e = list_first(&freequeue);
 	list_del(e);
@@ -169,6 +171,8 @@ int sys_clone(void (*function)(void), void *stack) {
 	copy_data(parent,t,4096);
 
   	//allocate_DIR(t);
+  t->dir = current()->dir;
+  dir_used[t->dir]++;
 
 	page_table_entry *pte = get_PT(t);
 	page_table_entry *ppte = get_PT(parent);
@@ -196,8 +200,7 @@ int sys_clone(void (*function)(void), void *stack) {
 	}
 	set_cr3(get_DIR(parent));
 
-	int newPID = t->PID * 2;
-	t->PID = newPID;
+	t->PID = ++global_PID;
 	t->info.user_ticks = 0;
   t->info.system_ticks = 0;
   t->info.blocked_ticks = 0;
@@ -206,8 +209,12 @@ int sys_clone(void (*function)(void), void *stack) {
   t->info.total_trans = 0;
   t->info.remaining_ticks = 0;
   t->state = 2;
-	PID = newPID;
 
+/*	tu->stack[KERNEL_STACK_SIZE-18] = ret_from_fork;
+  tu->stack[KERNEL_STACK_SIZE-19] = 0;
+	t->ebp_initial_value_pos = &tu->stack[KERNEL_STACK_SIZE-19];
+  tu->stack[KERNEL_STACK_SIZE-5] = function;
+	tu->stack[KERNEL_STACK_SIZE-2] = stack;*/
 	tu->stack[KERNEL_STACK_SIZE-19] = stack;
 	tu->stack[KERNEL_STACK_SIZE-18] = function;
   t->ebp_initial_value_pos = &tu->stack[KERNEL_STACK_SIZE-19];
@@ -218,16 +225,26 @@ int sys_clone(void (*function)(void), void *stack) {
 	
 	//set_cr3(get_DIR(t));
 	
-	fork_task = t;
-	
-	return PID;
+	//fork_task = t;
+	printk("clonant...\n");
+	return t->PID;
 } 
 
 void sys_exit()
 {  
+	//free_user_pages(current());
 	update_process_state_rr(current(),&freequeue);
-	dir_used[current()->dir]--;	/*(current()->dir_pages_baseAddr - &dir_pages)/sizeof(page_table_entry)*/
-	if(dir_used[current()->dir] == 0) free_user_pages(current());
+	int i = current()->dir;/*((unsigned long)current()->dir_pages_baseAddr - (unsigned long)&dir_pages)/(unsigned long)sizeof(page_table_entry);*/
+	--dir_used[i];
+	char c[50];
+	printk("\n-----\n");
+	itoa(i,c);
+	printk(c);
+	printk("\n");
+	itoa(dir_used[i],c);
+	printk(c);
+	printk("\n-----\n");
+	if(dir_used[i] <= 0) free_user_pages(current());
 	current()->PID=-1;
 	sched_next_rr();
 }
@@ -265,8 +282,8 @@ int sys_write(int fd, char * buffer, int size) {
 	return err;	
 }
 
-int semaphores[20];
+//int semaphores[20];
 
-int sys_sem_init (int n_sem, unsigned int value) {
+/*int sys_sem_init (int n_sem, unsigned int value) {
 	
-}
+}*/
