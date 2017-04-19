@@ -15,12 +15,10 @@ union task_union protected_tasks[NR_TASKS+2]
 
 union task_union *task = &protected_tasks[1]; /* == union task_union task[NR_TASKS] */
 
-//#if 0
 struct task_struct *list_head_to_task_struct(struct list_head *l)
 {
   return list_entry( l, struct task_struct, list);
 }
-//#endif
 	
 extern struct list_head blocked;
 
@@ -40,9 +38,14 @@ page_table_entry * get_PT (struct task_struct *t)
 int allocate_DIR(struct task_struct *t) 
 {
 	int i;
+	char c[50];
 
 	for (i=0;i<NR_TASKS;++i){
 		if (dir_used[i] == 0) {
+		itoa(i,c);
+		printk("\nPosició que se li assigna: ");
+		printk(c);
+		printk("\n");
 			t->dir_pages_baseAddr = (page_table_entry*) &dir_pages[i];
 			++dir_used[i];
 			t->dir = i;
@@ -64,7 +67,6 @@ void cpu_idle(void)
 {
 	__asm__ __volatile__("sti": : :"memory");
 
-	printk("idle");
 	while(1)
 	{
 	;
@@ -118,7 +120,7 @@ void init_task1(void)
 
 void task_switch(union task_union *t) {
     asm("pushl %esi; pushl %edi; pushl %ebx");
-    printk("\n\ntask switch\n\n");
+    //printk("\n\ntask switch\n\n");
     inner_task_switch(t);
     asm("popl %ebx; popl %edi; popl %esi");
 }
@@ -164,9 +166,8 @@ void update_process_state_rr (struct task_struct *t, struct list_head *dst_queue
 void sched_next_rr (void) {
 	struct task_struct * t;
 	if (list_empty(&readyqueue)) {
-		if (current() != idle_task) {
-			t = idle_task;
-		}
+		t = idle_task;
+		printk("idle");
 	}
 	else {
 		struct list_head * e = list_first(&readyqueue);

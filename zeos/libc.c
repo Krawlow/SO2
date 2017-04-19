@@ -153,4 +153,45 @@ int sem_init (int n_sem, unsigned int value) {
 	errno=0;
 	return result;
 }
-
+int sem_wait(int n_sem) {
+	int result;
+	__asm__ __volatile__ (
+		"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (22), "b" (n_sem) );
+	if (result<0)
+	{
+		errno = -result;
+		return -1;
+	}
+	errno=0;
+	return result;
+}
+int sem_signal(int n_sem) {
+	int result;
+	__asm__ __volatile__ (
+		"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (23), "b" (n_sem) );
+	if (result<0)
+	{
+		errno = -result;
+		return -1;
+	}
+	errno=0;
+	return result;
+}
+int sem_destroy(int n_sem) {
+	int result;
+	__asm__ __volatile__ (
+		"int $0x80\n\t"
+	:"=a" (result)
+	:"a" (24), "b" (n_sem) );
+	if (result<0)
+	{
+		errno = -result;
+		return -1;
+	}
+	errno=0;
+	return result;
+}

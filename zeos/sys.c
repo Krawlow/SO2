@@ -103,7 +103,6 @@ int sys_fork()
 
   	allocate_DIR(t);
 
-	//?
 	page_table_entry *pte = get_PT(t);
 	page_table_entry *ppte = get_PT(parent);
 	copy_data(ppte,pte,TOTAL_PAGES*sizeof(page_table_entry));
@@ -114,6 +113,8 @@ int sys_fork()
 	for(i=0;i<NUM_PAG_DATA;i++){
 		page_number_data = alloc_frame();
 		if (page_number_data==-1) {
+			--dir_used[t->dir];
+			printk("\n¡¡¡No hi ha frames fisics lliures per fer fork!!!\n");
 			int j;
 			for (j=0; j<i; j++)
       {
@@ -148,9 +149,10 @@ int sys_fork()
 	extern struct list_head readyqueue;
 	update_process_state_rr(t,&readyqueue);
 	
-	//set_cr3(get_DIR(t));
 	
 	fork_task = t;
+	
+	printk("forkejant...\n");
 	
 	return t->PID;
 }
@@ -169,36 +171,13 @@ int sys_clone(void (*function)(void), void *stack) {
 	union task_union *tu = (union task_union*)t;
 	struct task_struct *parent = current();
 	copy_data(parent,t,4096);
-
-  	//allocate_DIR(t);
-  t->dir = current()->dir;
-  dir_used[t->dir]++;
-
-	page_table_entry *pte = get_PT(t);
-	page_table_entry *ppte = get_PT(parent);
-	copy_data(ppte,pte,TOTAL_PAGES*sizeof(page_table_entry));
 	
-	int i;
-	int page_number_data;
-	int pag_init_copia_data = PAG_LOG_INIT_DATA + NUM_PAG_DATA;
-	for(i=0;i<NUM_PAG_DATA;i++){
-		page_number_data = alloc_frame();
-		if (page_number_data==-1) {
-			int j;
-			for (j=0; j<i; j++)
-      {
-        free_frame(get_frame(pte, PAG_LOG_INIT_DATA+j));
-        del_ss_pag(pte, PAG_LOG_INIT_DATA+j);
-      }
-      list_add_tail(e, &freequeue);
-			return -EAGAIN; 
-		}
-		set_ss_pag(pte,PAG_LOG_INIT_DATA+i,page_number_data);
-		set_ss_pag(ppte,pag_init_copia_data + i,pte[PAG_LOG_INIT_DATA+i].bits.pbase_addr);
-		copy_data((void*)((PAG_LOG_INIT_DATA + i)*PAGE_SIZE), (void*)((PAG_LOG_INIT_DATA + NUM_PAG_DATA + i)*PAGE_SIZE), PAGE_SIZE);
-		del_ss_pag(ppte,pag_init_copia_data + i);
-	}
-	set_cr3(get_DIR(parent));
+  char c[50];
+  itoa(t->dir,c);
+	printk("\nPosició que se li assigna al clon: ");
+	printk(c);
+	printk("\n");
+  ++dir_used[t->dir];
 
 	t->PID = ++global_PID;
 	t->info.user_ticks = 0;
@@ -210,41 +189,38 @@ int sys_clone(void (*function)(void), void *stack) {
   t->info.remaining_ticks = 0;
   t->state = 2;
 
-/*	tu->stack[KERNEL_STACK_SIZE-18] = ret_from_fork;
-  tu->stack[KERNEL_STACK_SIZE-19] = 0;
-	t->ebp_initial_value_pos = &tu->stack[KERNEL_STACK_SIZE-19];
-  tu->stack[KERNEL_STACK_SIZE-5] = function;
-	tu->stack[KERNEL_STACK_SIZE-2] = stack;*/
-	tu->stack[KERNEL_STACK_SIZE-19] = stack;
-	tu->stack[KERNEL_STACK_SIZE-18] = function;
+	tu->stack[KERNEL_STACK_SIZE-19] = 0;
+	tu->stack[KERNEL_STACK_SIZE-18] = ret_from_fork;
+	tu->stack[KERNEL_STACK_SIZE-5] = function;
+	tu->stack[KERNEL_STACK_SIZE-2] = stack;
   t->ebp_initial_value_pos = &tu->stack[KERNEL_STACK_SIZE-19];
 	
 
 	extern struct list_head readyqueue;
 	update_process_state_rr(t,&readyqueue);
 	
-	//set_cr3(get_DIR(t));
 	
-	//fork_task = t;
 	printk("clonant...\n");
 	return t->PID;
 } 
 
 void sys_exit()
 {  
-	//free_user_pages(current());
 	update_process_state_rr(current(),&freequeue);
 	int i = current()->dir;/*((unsigned long)current()->dir_pages_baseAddr - (unsigned long)&dir_pages)/(unsigned long)sizeof(page_table_entry);*/
 	--dir_used[i];
 	char c[50];
-	printk("\n-----\n");
+	printk("\n-----\nPos: ");
 	itoa(i,c);
 	printk(c);
-	printk("\n");
+	printk("\nReferències: ");
 	itoa(dir_used[i],c);
 	printk(c);
+	if(dir_used[i] <= 0) {
+		printk("\nS'allibera l'espai de l'usuari\n");
+		free_user_pages(current());
+	}
 	printk("\n-----\n");
-	if(dir_used[i] <= 0) free_user_pages(current());
 	current()->PID=-1;
 	sched_next_rr();
 }
@@ -284,6 +260,16 @@ int sys_write(int fd, char * buffer, int size) {
 
 //int semaphores[20];
 
-/*int sys_sem_init (int n_sem, unsigned int value) {
+int sys_sem_init (int n_sem, unsigned int value) {
 	
-}*/
+}
+int sys_sem_wait(int n_sem) {
+
+}
+
+int sys_sem_signal(int n_sem) {
+
+}
+int sys_sem_destroy(int n_sem) {
+
+}
