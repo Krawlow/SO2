@@ -20,22 +20,31 @@ long outer(long n)
 	acum = 0;
 	for(i=0; i<n; i++) acum = acum + inner(i);
 	return acum;
-}
+}int global;
+int global2;
 
 void func() {
 int pid = getpid();
 	write(1,"codi del clon\n",14);
-	fork();
+	//fork();
+	global2++;
+	if (global2 == 7) {
+	write(1,"semafor verd\n",strlen("semafor verd\n"));
+	global = 1;
+	}
+	else while(1);
 	int pid2 = getpid();
 	if (pid2 != pid) write(1,"Fork fet per un clon\n",strlen("Fork fet per un clon\n"));
 	exit();
 }
 
+
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
-//	runjp();
-//	runjp_rank(8,9);
+global = 0;
+	runjp();
+//	runjp_rank(8,8);
 	
 	
 	//runjp_rank(18,18); //21 bad ?? sometimes bad sometimes good?
@@ -45,14 +54,26 @@ int __attribute__ ((__section__(".text.main")))
 	
 	char c[100];
 	int i, pid, fff, ccc;
-	for(i=0;i<1;i++) {
+	for(i=0;i<0;i++) {
+	ccc=clone(func,&c[99]);
+	ccc=clone(func,&c[99]);
+	ccc=clone(func,&c[99]);
+	ccc=clone(func,&c[99]);
+	ccc=clone(func,&c[99]);
+	ccc=clone(func,&c[99]);
+	ccc=clone(func,&c[99]);
 	ccc=clone(func,&c[99]);
 	if(ccc<0) write(1,"unable to clone",strlen("unable to clone"));
-	fff=fork();
+	//fff=fork();
 	if(fff<0) write(1,"unable to fork",strlen("unable to fork"));
 	
 	}
-	//if(getpid()==1)while(1)write(1,"xd",strlen("xd"));
+	/*if(getpid()==1)while(global == 0){
+	itoa(global,c);
+	write(1,c,strlen(c));
+	}*/
+	write(1,"el pare ha sortit\n",strlen("el pare ha sortit\n"));
+	fork();
 	exit(); //while(1);
 	return(0);
 

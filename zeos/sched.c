@@ -120,7 +120,7 @@ void init_task1(void)
 
 void task_switch(union task_union *t) {
     asm("pushl %esi; pushl %edi; pushl %ebx");
-    //printk("\n\ntask switch\n\n");
+    printk("\n\ntask switch\n\n");
     inner_task_switch(t);
     asm("popl %ebx; popl %edi; popl %esi");
 }

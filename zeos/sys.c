@@ -101,7 +101,9 @@ int sys_fork()
 	struct task_struct *parent = current();
 	copy_data(parent,t,4096);
 
-  	allocate_DIR(t);
+  	if(allocate_DIR(t)==-1) {
+  		return -1;
+  	}
 
 	page_table_entry *pte = get_PT(t);
 	page_table_entry *ppte = get_PT(parent);
