@@ -17,8 +17,12 @@
 
 #include <errno.h>
 
+#include <semafors.h>
+
 #define LECTURA 0
 #define ESCRIPTURA 1
+
+struct semafors semf[20];
 
 int check_fd(int fd, int permissions)
 {
@@ -116,7 +120,7 @@ int sys_fork()
 		page_number_data = alloc_frame();
 		if (page_number_data==-1) {
 			--dir_used[t->dir];
-			printk("\n¡¡¡No hi ha frames fisics lliures per fer fork!!!\n");
+		//	printk("\n¡¡¡No hi ha frames fisics lliures per fer fork!!!\n");
 			int j;
 			for (j=0; j<i; j++)
       {
@@ -154,7 +158,7 @@ int sys_fork()
 	
 	fork_task = t;
 	
-	printk("forkejant...\n");
+//	printk("forkejant...\n");
 	
 	return t->PID;
 }
@@ -175,10 +179,10 @@ int sys_clone(void (*function)(void), void *stack) {
 	copy_data(parent,t,4096);
 	
   char c[50];
-  itoa(t->dir,c);
-	printk("\nPosició que se li assigna al clon: ");
-	printk(c);
-	printk("\n");
+//  itoa(t->dir,c);
+	//printk("\nPosició que se li assigna al clon: ");
+//	printk(c);
+	//printk("\n");
   ++dir_used[t->dir];
 
 	t->PID = ++global_PID;
@@ -202,7 +206,7 @@ int sys_clone(void (*function)(void), void *stack) {
 	update_process_state_rr(t,&readyqueue);
 	
 	
-	printk("clonant...\n");
+//	printk("clonant...\n");
 	return t->PID;
 } 
 
@@ -211,18 +215,18 @@ void sys_exit()
 	update_process_state_rr(current(),&freequeue);
 	int i = current()->dir;/*((unsigned long)current()->dir_pages_baseAddr - (unsigned long)&dir_pages)/(unsigned long)sizeof(page_table_entry);*/
 	--dir_used[i];
-	char c[50];
-	printk("\n-----\nPos: ");
-	itoa(i,c);
-	printk(c);
-	printk("\nReferències: ");
-	itoa(dir_used[i],c);
-	printk(c);
+//	char c[50];
+	//printk("\n-----\nPos: ");
+//	itoa(i,c);
+	//printk(c);
+//	printk("\nReferències: ");
+//	itoa(dir_used[i],c);
+	//printk(c);
 	if(dir_used[i] <= 0) {
-		printk("\nS'allibera l'espai de l'usuari\n");
+		//printk("\nS'allibera l'espai de l'usuari\n");
 		free_user_pages(current());
 	}
-	printk("\n-----\n");
+//	printk("\n-----\n");
 	current()->PID=-1;
 	sched_next_rr();
 }
@@ -260,18 +264,54 @@ int sys_write(int fd, char * buffer, int size) {
 	return err;	
 }
 
+extern struct list_head readyqueue;
+
 //int semaphores[20];
 
 int sys_sem_init (int n_sem, unsigned int value) {
-	
+	if (n_sem < 0 || n_sem >19) return -EINVAL;
+	if (semf[n_sem].owner!=NULL) return -EBUSY;
+	INIT_LIST_HEAD(&semf[n_sem].blockedqueue);
+	semf[n_sem].counter = value;
+	semf[n_sem].owner = current();
+	return 0;
 }
 int sys_sem_wait(int n_sem) {
-
+	if (n_sem < 0 || n_sem >19) return -EINVAL;
+	if (semf[n_sem].counter > 0) --semf[n_sem].counter;
+	else {
+		current()->sem = n_sem;
+		update_process_state_rr(current(),&semf[n_sem].blockedqueue);
+		sched_next_rr();
+	}
+	return current()->sem;
 }
 
 int sys_sem_signal(int n_sem) {
-
+	if (n_sem < 0 || n_sem >19) return -EINVAL;
+	if(list_empty(&semf[n_sem].blockedqueue)) {
+		++semf[n_sem].counter;
+	}
+	else {
+		struct list_head *e = list_first(&semf[n_sem].blockedqueue);
+		list_del(e);
+		struct task_struct * t = list_head_to_task_struct(e);
+		update_process_state_rr(t,&readyqueue);
+	}
+	return 0;
 }
 int sys_sem_destroy(int n_sem) {
-
+	if (n_sem < 0 || n_sem >19) return -EINVAL;
+	if (semf[n_sem].owner == NULL) return -EINVAL;
+	if (current() != semf[n_sem].owner) return -1;
+	semf[n_sem].counter = NULL;
+	semf[n_sem].owner = NULL;
+	while(!list_empty(&semf[n_sem].blockedqueue)) {
+		struct list_head *e = list_first(&semf[n_sem].blockedqueue);
+		list_del(e);
+		struct task_struct * t = list_head_to_task_struct(e);
+		t->sem = -1;
+		update_process_state_rr(t,&readyqueue);
+	}
+	return 0;	
 }

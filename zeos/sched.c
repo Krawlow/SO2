@@ -5,6 +5,7 @@
 #include <sched.h>
 #include <mm.h>
 #include <io.h>
+#include <semafors.h>
 
 /**
  * Container for the Task array and 2 additional pages (the first and the last one)
@@ -42,10 +43,10 @@ int allocate_DIR(struct task_struct *t)
 
 	for (i=0;i<NR_TASKS;++i){
 		if (dir_used[i] == 0) {
-		itoa(i,c);
-		printk("\nPosició que se li assigna: ");
-		printk(c);
-		printk("\n");
+		//itoa(i,c);
+		//printk("\nPosició que se li assigna: ");
+//		printk(c);
+	//	printk("\n");
 			t->dir_pages_baseAddr = (page_table_entry*) &dir_pages[i];
 			++dir_used[i];
 			t->dir = i;
@@ -120,7 +121,7 @@ void init_task1(void)
 
 void task_switch(union task_union *t) {
     asm("pushl %esi; pushl %edi; pushl %ebx");
-    printk("\n\ntask switch\n\n");
+   // printk("\n\ntask switch\n\n");
     inner_task_switch(t);
     asm("popl %ebx; popl %edi; popl %esi");
 }
@@ -167,7 +168,7 @@ void sched_next_rr (void) {
 	struct task_struct * t;
 	if (list_empty(&readyqueue)) {
 		t = idle_task;
-		printk("idle");
+	//	printk("idle");
 	}
 	else {
 		struct list_head * e = list_first(&readyqueue);
@@ -183,9 +184,14 @@ void sched_next_rr (void) {
 	global_quantum = get_quantum(t);
 	task_switch((union task_union*)t);
 } 
-
+extern struct semafors semf[20];
 void init_sched(){
 	global_quantum = QUANTUM;
+	int i;
+	for (i=0;i<20;i++) {
+		semf[i].counter = NULL;
+		semf[i].owner = NULL;		
+	}
 }
 
 void scheduling() {

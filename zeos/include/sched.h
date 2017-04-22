@@ -25,6 +25,7 @@ struct task_struct {
 	int state; //0 = zombie, 1 = running, 2 = ready, 3 = blocked
 	struct stats info;
 	int dir;
+	int sem;
 };
 
 union task_union {
