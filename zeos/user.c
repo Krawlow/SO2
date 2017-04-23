@@ -72,8 +72,8 @@ global = 0;
 	itoa(global,c);
 	write(1,c,strlen(c));
 	}*/
-	write(1,"el pare ha sortit\n",strlen("el pare ha sortit\n"));
-	fork();
+	//write(1,"el pare ha sortit\n",strlen("el pare ha sortit\n"));
+	//fork();
 	exit(); //while(1);
 	return(0);
 
