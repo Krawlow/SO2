@@ -144,11 +144,16 @@ void init_readyqueue() {
 	INIT_LIST_HEAD(&readyqueue);
 }
 
+extern struct list_head keyboardqueue;
+void init_keyboardqueue() {
+	INIT_LIST_HEAD(&keyboardqueue);
+}
 /* Initializes paging for the system address space */
 void init_mm()
 {
 	init_freequeue();
 	init_readyqueue();
+	init_keyboardqueue();
   init_table_pages();
   init_frames();
   init_dir_pages();

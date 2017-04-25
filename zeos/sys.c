@@ -213,7 +213,7 @@ int sys_clone(void (*function)(void), void *stack) {
 void sys_exit()
 {  
 	int i;
-	for (i=0;i<20;i++)if(semf[i].owner==current())sys_sem_destroy(i);
+	for (i=0;i<20;i++)sys_sem_destroy(i);
 	update_process_state_rr(current(),&freequeue);
 	i = current()->dir;/*((unsigned long)current()->dir_pages_baseAddr - (unsigned long)&dir_pages)/(unsigned long)sizeof(page_table_entry);*/
 	--dir_used[i];
@@ -275,7 +275,7 @@ int sys_sem_init (int n_sem, unsigned int value) {
 	if (semf[n_sem].owner!=NULL) return -EBUSY;
 	INIT_LIST_HEAD(&semf[n_sem].blockedqueue);
 	semf[n_sem].counter = value;
-	semf[n_sem].owner = current();
+	semf[n_sem].owner = current()->PID;
 	return 0;
 }
 int sys_sem_wait(int n_sem) {
@@ -287,7 +287,8 @@ int sys_sem_wait(int n_sem) {
 		update_process_state_rr(current(),&semf[n_sem].blockedqueue);
 		sched_next_rr();
 	}
-	return current()->sem;
+	if (current()->sem >= 0) return 0;
+	else return current()->sem;
 }
 
 int sys_sem_signal(int n_sem) {
@@ -307,7 +308,7 @@ int sys_sem_signal(int n_sem) {
 int sys_sem_destroy(int n_sem) {
 	if (n_sem < 0 || n_sem >19) return -EINVAL;
 	if (semf[n_sem].owner == NULL) return -EINVAL;
-	if (current() != semf[n_sem].owner) return -1;
+	if (current()->PID != semf[n_sem].owner) return -1;
 	semf[n_sem].counter = NULL;
 	semf[n_sem].owner = NULL;
 	while(!list_empty(&semf[n_sem].blockedqueue)) {
