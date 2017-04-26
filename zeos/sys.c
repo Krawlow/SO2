@@ -74,7 +74,7 @@ int sys_getstats(int pid, struct stats *st) {
 	for(i=0;i<NR_TASKS;i++){
 		if(task[i].task.PID == pid) {
 			task[i].task.info.remaining_ticks=global_quantum;
-			copy_to_user(&current()->info,st,sizeof(struct stats));
+			copy_to_user(&task[i].task.info,st,sizeof(struct stats));
 			return 0;
 		}
 	}

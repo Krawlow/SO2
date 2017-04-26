@@ -188,6 +188,7 @@ extern struct semafors semf[20];
 void init_sched(){
 	global_quantum = QUANTUM;
 	int i;
+	for (i = 0; i< NR_TASKS; i++)dir_used[i] = 0;
 	for (i=0;i<20;i++) {
 		semf[i].counter = NULL;
 		semf[i].owner = NULL;		
