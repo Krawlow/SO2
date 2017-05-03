@@ -26,8 +26,8 @@ struct semafors semf[20];
 
 int check_fd(int fd, int permissions)
 {
-  if (fd!=1) return -EBADF;
-  if (permissions!=ESCRIPTURA) return -EACCES;
+  if (fd!=1 & fd!=0) return -EBADF;
+  if (permissions!=ESCRIPTURA & permissions!=LECTURA) return -EACCES;
   return 0;
 }
 
@@ -319,4 +319,18 @@ int sys_sem_destroy(int n_sem) {
 		update_process_state_rr(t,&readyqueue);
 	}
 	return 0;	
+}
+
+int sys_read(int fd, char * buf, int count) {
+	int err;
+	if (err=check_fd(fd,LECTURA) != 0) return err;
+	if (!access_ok(VERIFY_READ, buf, sizeof(buf))) return -EFAULT;
+	if (count < 0) return -EINVAL;
+	err=sys_read_keyboard(&buf,count);
+	char c[1];
+	itoa(err,c);
+	printk("\n Aixo es els bytes llegits ");
+	printk(c);
+	printk("\n");
+	return err;	
 }

@@ -26,6 +26,7 @@ struct task_struct {
 	struct stats info;
 	int dir;
 	int sem;
+	int restants;
 };
 
 union task_union {

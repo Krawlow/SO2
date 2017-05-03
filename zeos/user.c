@@ -39,11 +39,18 @@ int pid = getpid();
 }
 
 
+void keyboard() {
+	char c2[100];
+	if(30==read(0,c2,30)) write(1,"Ok\n",strlen("Ok\n"));
+	exit();
+}
+
+
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
 global = 0;
-	runjp();
+	//runjp();
 	//runjp_rank(25,25);
 	
 	
@@ -52,7 +59,7 @@ global = 0;
 	//runjp_rank(25,25); //25 bad
 	
 	
-	char c[100];
+	char c[1000];
 	int i, pid, fff, ccc;
 	for(i=0;i<0;i++) {
 	ccc=clone(func,&c[99]);
@@ -74,7 +81,9 @@ global = 0;
 	}*/
 	//write(1,"el pare ha sortit\n",strlen("el pare ha sortit\n"));
 	//fork();
-	exit(); //while(1);
+	//exit(); 
+	clone(keyboard,&c[999]);
+	while(1);
 	return(0);
 
 

@@ -7,6 +7,7 @@
 #include <segment.h>
 #include <hardware.h>
 #include <sched.h>
+#include <keyboard.h>
 
 Byte phys_mem[TOTAL_PAGES];
 Byte dir_used[NR_TASKS];
@@ -151,6 +152,7 @@ void init_mm()
 	init_freequeue();
 	init_readyqueue();
 	init_keyboardqueue();
+	init_circbuff();
   init_table_pages();
   init_frames();
   init_dir_pages();
