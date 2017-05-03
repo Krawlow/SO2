@@ -44,7 +44,7 @@ int __attribute__ ((__section__(".text.main")))
 {
 global = 0;
 	runjp();
-//	runjp_rank(8,8);
+	//runjp_rank(25,25);
 	
 	
 	//runjp_rank(18,18); //21 bad ?? sometimes bad sometimes good?
