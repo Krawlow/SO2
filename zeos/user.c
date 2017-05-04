@@ -41,7 +41,7 @@ int pid = getpid();
 
 void keyboard() {
 	char c2[100];
-	if(30==read(0,c2,30)) write(1,"Ok\n",strlen("Ok\n"));
+	if(33==read(0,c2,33)) write(1,"Ok\n",strlen("Ok\n"));
 	exit();
 }
 
@@ -82,6 +82,7 @@ global = 0;
 	//write(1,"el pare ha sortit\n",strlen("el pare ha sortit\n"));
 	//fork();
 	//exit(); 
+	clone(keyboard,&c[999]);
 	clone(keyboard,&c[999]);
 	while(1);
 	return(0);

@@ -327,7 +327,7 @@ int sys_read(int fd, char * buf, int count) {
 	if (!access_ok(VERIFY_READ, buf, sizeof(buf))) return -EFAULT;
 	if (count < 0) return -EINVAL;
 	err=sys_read_keyboard(&buf,count);
-	char c[1];
+	char c[2];
 	itoa(err,c);
 	printk("\n Aixo es els bytes llegits ");
 	printk(c);
