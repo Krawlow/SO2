@@ -109,7 +109,21 @@ void xd() {
 	task_switch((union task_union*)fork_task);
 }
 
-
+extern struct cbuffer teclat_buff;
+extern struct list_head keyboardqueue;
+void KSR() {
+	Byte key = inb(0x60);
+  if((key & 0x80) == 0x80) { //0x80
+		int i = key & 0x7f;
+		char c = char_map[i];
+		if(!circbufffull(&teclat_buff))circbuffadd(&teclat_buff,c);
+		printc(list_head_to_task_struct(list_first(&keyboardqueue))->restants+'0');
+		printc(buff_used(&teclat_buff)+'0');
+		if ((!list_empty(&keyboardqueue) && circbufffull(&teclat_buff)) || (list_head_to_task_struct(list_first(&keyboardqueue))->restants==buff_used(&teclat_buff)) && !circbufffull(&teclat_buff)) unblock(list_head_to_task_struct(list_first(&keyboardqueue)));
+//		if (!list_empty(&keyboardqueue)) printk("llista no buida\n"); if (circbufffull(&teclat_buff)) printk("buffer ple\n");
+//		if (list_head_to_task_struct(list_first(&keyboardqueue))->restants==buff_used(&teclat_buff)) printk("el buffer te tants elements com els que espera el primer de la cua\n"); if(!circbufffull(&teclat_buff)) printk("buffer no ple\n");
+  }
+}
 void RSR() {
   Byte key = inb(0x60);
   if((key & 0x80) == 0x80) { //0x80

@@ -20,30 +20,48 @@ int sys_write_console(char *buffer,int size)
 }
 extern struct list_head keyboardqueue;
 int sys_read_keyboard(char *buf,int count) {
+	current()->restants = count;
 	if(!list_empty(&keyboardqueue)) {
-		unblock(list_head_to_task_struct(list_first(&keyboardqueue)));
+		printk("em fico a la cua\n");
 		block();
 	}
-	else {
-		int i;
-		if (count < circbuffsize(&teclat_buff)) {
-			for(i=0;i<count;i++) {
-				buf[i]=circbuffdel(&teclat_buff);
+	int i,total = 0;
+	char buff[100];
+	while(current()->restants > 0) {
+		if (current()->restants <= circbuffsize(&teclat_buff)) {
+			//AND the distance between opt and ipt is the same amount we want to read (so we don't read before the buffer is filled completely
+			if (buff_used(&teclat_buff) == current()->restants) {
+				for(i=0;i<current()->restants;i++) {
+					buff[total]=circbuffdel(&teclat_buff);
+					total++;
+				}
+				//copy_to_user(&buff,buf,i);
+				current()->restants -= i;
 			}
-			return count;
-		}
-		else if (circbufffull(&teclat_buff)) {
-			for(i=0;i<circbuffsize(&teclat_buff);i++) {
-				buf[i]=circbuffdel(&teclat_buff);
-			}
-			current()->restants = count-circbuffsize(&teclat_buff);
-			block();
-			return i-1;
+			else {
+				printk("lleigeixo poc, pero les dades encara no hi son, em bloquejo\n");
+				blockP();
+			 }
 		}
 		else {
-			current()->restants = count;
-			block();
+			if (circbufffull(&teclat_buff)) {
+				printk("buffer ple, el buido i vaig a la cua amb prioritat\n");
+				for(i=0;i<circbuffsize(&teclat_buff);i++) {
+					//char c[1] = {circbuffdel(&teclat_buff)};
+					//copy_to_user(&c,&buf[i],sizeof(c));
+					buff[total]=circbuffdel(&teclat_buff);
+					total++;
+				}
+				//copy_to_user(&buff,buf,i);
+				current()->restants -= i;
+				blockP();
+			}
+			else {
+				printk("esperare a que s'ompli el buffer\n");
+				blockP();
+			}
 		}
-		return 0;
 	}
+	copy_to_user(&buff,buf,total);
+	return total;
 }

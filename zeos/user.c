@@ -37,11 +37,12 @@ int pid = getpid();
 	if (pid2 != pid) write(1,"Fork fet per un clon\n",strlen("Fork fet per un clon\n"));
 	exit();
 }
-
+char c2[200];
 
 void keyboard() {
-	char c2[100];
-	if(33==read(0,c2,33)) write(1,"Ok\n",strlen("Ok\n"));
+	
+	read(0,c2,5);
+	write(1,c2,5);
 	exit();
 }
 

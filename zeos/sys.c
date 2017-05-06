@@ -239,15 +239,9 @@ int sys_gettime() {
 
 int sys_write(int fd, char * buffer, int size) {
 	int err = check_fd(fd,ESCRIPTURA);
-	if (check_fd(fd,ESCRIPTURA) != 0) {
-		return err;
-	}
-	if (buffer == NULL) {
-		return -EFAULT;
-	}
-	if (size < 0) {
-		return -EINVAL;
-	}
+	if (check_fd(fd,ESCRIPTURA) != 0) return err;
+	if (!access_ok(VERIFY_READ, buffer, sizeof(buffer))) return -EFAULT;
+	if (size < 0) return -EINVAL;
 	char c[10];
 	err = 0;
 	for (int i = 0; i < size; i+=10) {
@@ -324,11 +318,12 @@ int sys_sem_destroy(int n_sem) {
 int sys_read(int fd, char * buf, int count) {
 	int err;
 	if (err=check_fd(fd,LECTURA) != 0) return err;
-	if (!access_ok(VERIFY_READ, buf, sizeof(buf))) return -EFAULT;
+	if (!access_ok(VERIFY_WRITE, buf, sizeof(buf))) return -EFAULT;
 	if (count < 0) return -EINVAL;
-	err=sys_read_keyboard(&buf,count);
+	err=sys_read_keyboard(buf,count);
 	char c[2];
 	itoa(err,c);
+	printk(buf);
 	printk("\n Aixo es els bytes llegits ");
 	printk(c);
 	printk("\n");

@@ -146,13 +146,14 @@ extern struct list_head keyboardqueue;
 void init_keyboardqueue() {
 	INIT_LIST_HEAD(&keyboardqueue);
 }
+extern struct cbuffer teclat_buff;
 /* Initializes paging for the system address space */
 void init_mm()
 {
 	init_freequeue();
 	init_readyqueue();
 	init_keyboardqueue();
-	init_circbuff();
+	init_circbuff(&teclat_buff);
   init_table_pages();
   init_frames();
   init_dir_pages();
