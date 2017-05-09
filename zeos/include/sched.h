@@ -28,6 +28,7 @@ struct task_struct {
 	int sem;
 	int restants;
 	unsigned int program_break;
+	int heap_pages;
 };
 
 union task_union {

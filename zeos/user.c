@@ -52,7 +52,7 @@ int __attribute__ ((__section__(".text.main")))
   main(void)
 {
 global = 0;
-	//runjp();
+	runjp();
 	//runjp_rank(25,25);
 	
 	
@@ -87,6 +87,9 @@ global = 0;
 	//clone(keyboard,&c[999]);
 	//clone(keyboard,&c[799]);
 	//clone(keyboard,&c[999]);
+	int *pan = sbrk(3);
+	(*pan) = "hola";
+	write(1,(*pan),5);
 	while(1);
 	return(0);
 

@@ -131,12 +131,27 @@ int sys_fork()
 			return -EAGAIN; 
 		}
 		set_ss_pag(pte,PAG_LOG_INIT_DATA+i,page_number_data);
-		set_ss_pag(ppte,pag_init_copia_data + i,pte[PAG_LOG_INIT_DATA+i].bits.pbase_addr);
+		//set_ss_pag(ppte,pag_init_copia_data + i,pte[PAG_LOG_INIT_DATA+i].bits.pbase_addr);
+		set_ss_pag(ppte,pag_init_copia_data + i,page_number_data);
 		copy_data((void*)((PAG_LOG_INIT_DATA + i)*PAGE_SIZE), (void*)((PAG_LOG_INIT_DATA + NUM_PAG_DATA + i)*PAGE_SIZE), PAGE_SIZE);
 		del_ss_pag(ppte,pag_init_copia_data + i);
 	}
 	set_cr3(get_DIR(parent));
-
+	
+	/*HEAP*/
+	page_number_data = alloc_frame();
+	if (page_number_data==-1) {
+		t->heap_pages = 0;
+		--dir_used[t->dir];
+    free_frame(page_number_data);
+    list_add_tail(e, &freequeue);
+		return -EAGAIN; 
+	}
+	t->heap_pages = 1;
+	set_ss_pag(pte,pag_init_copia_data,page_number_data);
+	t->program_break = page_number_data*PAGE_SIZE; //page_number_data*PAGE_SIZE ens dona l'adreça de memoria on comença el frame
+	/*---*/
+	
 	t->PID = ++global_PID;
 	t->info.user_ticks = 0;
   t->info.system_ticks = 0;
@@ -215,7 +230,6 @@ void sys_exit()
 	int i;
 	for (i=0;i<20;i++)sys_sem_destroy(i);
 	update_process_state_rr(current(),&freequeue);
-	//list_del(&current()->list);
 	i = current()->dir;/*((unsigned long)current()->dir_pages_baseAddr - (unsigned long)&dir_pages)/(unsigned long)sizeof(page_table_entry);*/
 	--dir_used[i];
 //	char c[50];
@@ -228,6 +242,11 @@ void sys_exit()
 	if(dir_used[i] <= 0) {
 		//printk("\nS'allibera l'espai de l'usuari\n");
 		free_user_pages(current());
+		int i;
+		for(i=0;i<current()->heap_pages;i++) {
+			free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i));
+			del_ss_pag(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i);
+		}
 	}
 //	printk("\n-----\n");
 	current()->PID=-1;
@@ -330,13 +349,32 @@ int sys_read(int fd, char * buf, int count) {
 	printk("\n");
 	return err;	
 }
-void sbrk*(int increment) {
-	current()->program_break = (PAG_LOG_INIT_DATA + 2*NUM_PAG_DATA)*0x100000; //inicialment?
-	if (current()->program_break += increment < 0x28FFFF0) {
-		int retvalue = current()->program_break;
-		current()->program_break += increment;
-		return retvalue;
-	} //comprovar que no se'n va fora de l'espai d'adreces d'usuari que va de 0x100000 a L_USER_START+(NUM_PAG_CODE+NUM_PAG_DATA)*0x1000-16 ... 0x100000+0x800000+0x2000000-16 = 0x2900000-0x10 = 0x28FFFF0 //// en verda 0x400|000 //// augmentar bytes usats de cada frame, si supera el total del frame, pillar un nou frame //// s'ha de pensar en taules de pagines i merdes, cada proces te una taula de pagines perque te un directori, en aquesta taula de pagines l'adreça inicial logica bona seria la que he posat, pero seria l'adreça logica, fisicament aquesta adreça tambe esta mapejada a aquella posicio pero... que lio tu jjjja
-	else return -ENOMEM;
-	
+void *sys_sbrk(int increment) {
+	int count = increment, retvalue = current()->program_break, countpag = 0;
+	char c[10];
+	itoa(PH_PAGE(retvalue),c);
+	printk(c);
+	printk("<- Aquesta es la pagina on comença el heap");
+		while (count > 0) {
+			if (PH_PAGE(retvalue + increment) == PH_PAGE(retvalue)) {
+				current()->program_break += increment;
+				count -= increment;
+			}
+			else {
+				int page_number_data = alloc_frame();
+				countpag++;
+				if (page_number_data==-1) {
+					int i;
+					for(i=0;i<countpag;i++)free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i));
+					return -ENOMEM; 
+				}
+				current()->heap_pages++;
+				set_ss_pag(get_PT(current()),PH_PAGE(current()->program_break),page_number_data);
+				int new_prog_brk = (current()->program_break&0xFFF000)+0x001000;
+				count -= new_prog_brk-current()->program_break; //bytes restants de la pagina actual
+				current()->program_break = PH_PAGE(page_number_data*PAGE_SIZE);
+			}
+		}
+//comprovar que no se'n va fora de l'espai d'adreces d'usuari que va de 0x100000 a L_USER_START+(NUM_PAG_CODE+NUM_PAG_DATA)*0x1000-16 ... 0x100000+0x800000+0x2000000-16 = 0x2900000-0x10 = 0x28FFFF0 //// en verda 0x400|000 //// augmentar bytes usats de cada frame, si supera el total del frame, pillar un nou frame //// s'ha de pensar en taules de pagines i merdes, cada proces te una taula de pagines perque te un directori, en aquesta taula de pagines l'adreça inicial logica bona seria la que he posat, pero seria l'adreça logica, fisicament aquesta adreça tambe esta mapejada a aquella posicio pero... que lio tu jjjja
+	return retvalue;
 }
