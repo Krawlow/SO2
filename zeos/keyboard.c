@@ -23,6 +23,7 @@ void blockP() {
 void unblock(struct task_struct *t) {
 	printk("desbloquejo un procés a la cua de teclat\n");
 	list_del(&t->list);
+	if (list_empty(&keyboardqueue)) printk("ara esta buida\n");
 	update_process_state_rr(t,&readyqueue);
 }
 void init_circbuff(struct cbuffer *b) {

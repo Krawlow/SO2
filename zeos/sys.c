@@ -215,6 +215,7 @@ void sys_exit()
 	int i;
 	for (i=0;i<20;i++)sys_sem_destroy(i);
 	update_process_state_rr(current(),&freequeue);
+	//list_del(&current()->list);
 	i = current()->dir;/*((unsigned long)current()->dir_pages_baseAddr - (unsigned long)&dir_pages)/(unsigned long)sizeof(page_table_entry);*/
 	--dir_used[i];
 //	char c[50];
@@ -328,4 +329,14 @@ int sys_read(int fd, char * buf, int count) {
 	printk(c);
 	printk("\n");
 	return err;	
+}
+void sbrk*(int increment) {
+	current()->program_break = (PAG_LOG_INIT_DATA + 2*NUM_PAG_DATA)*0x100000; //inicialment?
+	if (current()->program_break += increment < 0x28FFFF0) {
+		int retvalue = current()->program_break;
+		current()->program_break += increment;
+		return retvalue;
+	} //comprovar que no se'n va fora de l'espai d'adreces d'usuari que va de 0x100000 a L_USER_START+(NUM_PAG_CODE+NUM_PAG_DATA)*0x1000-16 ... 0x100000+0x800000+0x2000000-16 = 0x2900000-0x10 = 0x28FFFF0 //// en verda 0x400|000 //// augmentar bytes usats de cada frame, si supera el total del frame, pillar un nou frame //// s'ha de pensar en taules de pagines i merdes, cada proces te una taula de pagines perque te un directori, en aquesta taula de pagines l'adreça inicial logica bona seria la que he posat, pero seria l'adreça logica, fisicament aquesta adreça tambe esta mapejada a aquella posicio pero... que lio tu jjjja
+	else return -ENOMEM;
+	
 }

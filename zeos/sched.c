@@ -123,7 +123,7 @@ void task_switch(union task_union *t) {
     asm("pushl %esi; pushl %edi; pushl %ebx");
    // printk("\n\ntask switch\n\n");
     inner_task_switch(t);
-    asm("popl %ebx; popl %edi; popl %esi");
+    asm("add $0x4,%esp; popl %ebx; popl %edi; popl %esi");
 }
  
 void inner_task_switch(union task_union *t) {

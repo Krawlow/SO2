@@ -28,20 +28,14 @@ int sys_read_keyboard(char *buf,int count) {
 	int i,total = 0;
 	char buff[100];
 	while(current()->restants > 0) {
-		if (current()->restants <= circbuffsize(&teclat_buff)) {
+		if (current()->restants <= buff_used(&teclat_buff)) {
 			//AND the distance between opt and ipt is the same amount we want to read (so we don't read before the buffer is filled completely
-			if (buff_used(&teclat_buff) == current()->restants) {
-				for(i=0;i<current()->restants;i++) {
-					buff[total]=circbuffdel(&teclat_buff);
-					total++;
-				}
-				//copy_to_user(&buff,buf,i);
-				current()->restants -= i;
+			for(i=0;i<current()->restants;i++) {
+				buff[total]=circbuffdel(&teclat_buff);
+				total++;
 			}
-			else {
-				printk("lleigeixo poc, pero les dades encara no hi son, em bloquejo\n");
-				blockP();
-			 }
+			copy_to_user(&buff,buf,i);
+			current()->restants -= i;
 		}
 		else {
 			if (circbufffull(&teclat_buff)) {
@@ -52,7 +46,7 @@ int sys_read_keyboard(char *buf,int count) {
 					buff[total]=circbuffdel(&teclat_buff);
 					total++;
 				}
-				//copy_to_user(&buff,buf,i);
+				copy_to_user(&buff,buf,i);
 				current()->restants -= i;
 				blockP();
 			}
@@ -62,6 +56,5 @@ int sys_read_keyboard(char *buf,int count) {
 			}
 		}
 	}
-	copy_to_user(&buff,buf,total);
 	return total;
 }

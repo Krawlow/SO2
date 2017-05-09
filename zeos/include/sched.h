@@ -27,6 +27,7 @@ struct task_struct {
 	int dir;
 	int sem;
 	int restants;
+	unsigned int program_break;
 };
 
 union task_union {
