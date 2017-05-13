@@ -117,7 +117,7 @@ void init_task1(void)
 	/*HEAP*/
 	int page_number_data = alloc_frame();
 	t->heap_pages = 1;
-	set_ss_pag(get_PT(t),PAG_LOG_INIT_DATA+NUM_PAG_DATA,page_number_data);
+	set_ss_pag(get_PT(t),page_number_data,page_number_data);
 	t->program_break = page_number_data*PAGE_SIZE; //page_number_data*PAGE_SIZE ens dona l'adreça de memoria on comença el frame
 	/*---*/
 	union task_union *tu = (union task_union*)t;

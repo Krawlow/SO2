@@ -87,12 +87,14 @@ global = 0;
 	//clone(keyboard,&c[999]);
 	//clone(keyboard,&c[799]);
 	//clone(keyboard,&c[999]);
-	int *pan = sbrk(3);
-	(*pan) = "hola";
-	write(1,(*pan),5);
 	while(1);
 	return(0);
-
+	int *pan = sbrk(4095);
+	(*pan) = "hola";
+	write(1,(*pan),5);
+	
+//PT=0x23000 <pagusr_table+4096>, page=284, frame=312
+//PT=0x23000 <pagusr_table+4096>, page=312, frame=314
 
     /* Next line, tries to move value 0 to CR3 register. This register is a privileged one, and so it will raise an exception */
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */

@@ -26,7 +26,7 @@ struct semafors semf[20];
 
 int check_fd(int fd, int permissions)
 {
-  if (fd!=1 & fd!=0) return -EBADF;
+  if (fd < 0 | fd > 1) return -EBADF;
   if (permissions!=ESCRIPTURA & permissions!=LECTURA) return -EACCES;
   return 0;
 }
@@ -148,8 +148,9 @@ int sys_fork()
 		return -EAGAIN; 
 	}
 	t->heap_pages = 1;
-	set_ss_pag(pte,pag_init_copia_data,page_number_data);
+	set_ss_pag(pte,page_number_data,page_number_data);
 	t->program_break = page_number_data*PAGE_SIZE; //page_number_data*PAGE_SIZE ens dona l'adreça de memoria on comença el frame
+//	if (PH_PAGE(t->program_break) == pag_init_copia_da
 	/*---*/
 	
 	t->PID = ++global_PID;
@@ -340,14 +341,14 @@ int sys_read(int fd, char * buf, int count) {
 	if (err=check_fd(fd,LECTURA) != 0) return err;
 	if (!access_ok(VERIFY_WRITE, buf, sizeof(buf))) return -EFAULT;
 	if (count < 0) return -EINVAL;
-	err=sys_read_keyboard(buf,count);
+	int err2=sys_read_keyboard(buf,count);
 	char c[2];
 	itoa(err,c);
 	printk(buf);
 	printk("\n Aixo es els bytes llegits ");
 	printk(c);
 	printk("\n");
-	return err;	
+	return err2;	
 }
 void *sys_sbrk(int increment) {
 	int count = increment, retvalue = current()->program_break, countpag = 0;
