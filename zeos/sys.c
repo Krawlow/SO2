@@ -351,31 +351,53 @@ int sys_read(int fd, char * buf, int count) {
 	return err2;	
 }
 void *sys_sbrk(int increment) {
-	int count = increment, retvalue = current()->program_break, countpag = 0;
-	char c[10];
-	itoa(PH_PAGE(retvalue),c);
-	printk(c);
-	printk("<- Aquesta es la pagina on comença el heap");
-		while (count > 0) {
-			if (PH_PAGE(retvalue + increment) == PH_PAGE(retvalue)) {
-				current()->program_break += increment;
-				count -= increment;
-			}
-			else {
-				int page_number_data = alloc_frame();
-				countpag++;
-				if (page_number_data==-1) {
-					int i;
-					for(i=0;i<countpag;i++)free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i));
-					return -ENOMEM; 
+	if (increment >= 0) {
+		int count = increment, retvalue = current()->program_break, countpag = 0;
+		char c[10];
+		itoa(PH_PAGE(retvalue),c);
+		printk(c);
+		printk("<- Aquesta es la pagina on comença el heap");
+			while (count > 0) {
+				if (PH_PAGE(retvalue + increment) == PH_PAGE(retvalue)) {
+					current()->program_break += increment;
+					count -= increment;
 				}
-				current()->heap_pages++;
-				set_ss_pag(get_PT(current()),PH_PAGE(current()->program_break),page_number_data);
-				int new_prog_brk = (current()->program_break&0xFFF000)+0x001000;
-				count -= new_prog_brk-current()->program_break; //bytes restants de la pagina actual
-				current()->program_break = PH_PAGE(page_number_data*PAGE_SIZE);
+				else {
+					int page_number_data = alloc_frame();
+					countpag++;
+					if (page_number_data==-1) {
+						int i;
+						for(i=0;i<countpag;i++)free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i));
+						return -ENOMEM; 
+					}
+					current()->heap_pages++;
+					set_ss_pag(get_PT(current()),PH_PAGE(current()->program_break),page_number_data);
+					int new_prog_brk = (current()->program_break&0xFFF000)+0x001000;
+					count -= new_prog_brk-current()->program_break; //bytes restants de la pagina actual
+					current()->program_break = PH_PAGE(page_number_data*PAGE_SIZE);
+				}
 			}
-		}
-//comprovar que no se'n va fora de l'espai d'adreces d'usuari que va de 0x100000 a L_USER_START+(NUM_PAG_CODE+NUM_PAG_DATA)*0x1000-16 ... 0x100000+0x800000+0x2000000-16 = 0x2900000-0x10 = 0x28FFFF0 //// en verda 0x400|000 //// augmentar bytes usats de cada frame, si supera el total del frame, pillar un nou frame //// s'ha de pensar en taules de pagines i merdes, cada proces te una taula de pagines perque te un directori, en aquesta taula de pagines l'adreça inicial logica bona seria la que he posat, pero seria l'adreça logica, fisicament aquesta adreça tambe esta mapejada a aquella posicio pero... que lio tu jjjja
-	return retvalue;
+		return retvalue;
+	}
+	else {
+		int count = -increment, progbrk = current()->program_break;
+			while (count > 0) {
+				if (PH_PAGE(progbrk - increment) == PH_PAGE(progbrk)) {
+					current()->program_break += increment;
+					count += increment;
+				}
+				else {
+					current()->heap_pages--;
+					del_ss_pag(get_PT(current()),PH_PAGE(current()->program_break));
+					free_frame(get_frame(get_PT(current()),PH_PAGE(current()->program_break));
+					/*He de fer una estructura d'adreces de frames usats!!! o com coi ho faig?
+					
+					int new_prog_brk = (current()->program_break&0xFFF000)+0x001000;
+					count -= new_prog_brk-current()->program_break; //bytes restants de la pagina actual
+					current()->program_break = PH_PAGE(page_number_data*PAGE_SIZE);*/
+				}
+			}
+		return retvalue;
+	}
+	}
 }
