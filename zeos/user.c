@@ -53,7 +53,7 @@ int __attribute__ ((__section__(".text.main")))
 {
 global = 0;
 	//runjp();
-	//runjp_rank(25,25);
+	runjp_rank(1,1);
 	
 	
 	//runjp_rank(18,18); //21 bad ?? sometimes bad sometimes good?
@@ -89,10 +89,11 @@ global = 0;
 	//clone(keyboard,&c[999]);
 	//clone(keyboard,&c[799]);
 	//clone(keyboard,&c[999]);
-	int *pan = sbrk(4096);
-	pan = sbrk(4096);
+/*	int *pan = sbrk(4096);
+	pan = sbrk(5);
+	pan = sbrk(-4096);
 	(*pan) = "hola";
-	write(1,(*pan),5);
+	write(1,(*pan),5);*/
 	while(1);
 	return(0);
 	

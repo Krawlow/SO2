@@ -114,16 +114,8 @@ void init_task1(void)
   t->info.remaining_ticks = QUANTUM;
 	allocate_DIR(t);
 	set_user_pages(t);
-	/*HEAP*/
-	int page_number_data = alloc_frame();
-	t->heap_pages = 1; //<- tindre problemes aqui
-	/*set_ss_pag(get_PT(t),page_number_data,page_number_data);
-	t->program_break = page_number_data*PAGE_SIZE;*/ //page_number_data*PAGE_SIZE ens dona l'adreça de memoria on comença el frame
-	/*---*/
-	set_ss_pag(get_PT(t),PAG_LOG_INIT_DATA+NUM_PAG_DATA,page_number_data);
-	t->program_break = get_frame(get_PT(t),PAG_LOG_INIT_DATA+NUM_PAG_DATA)<<12;
-	//t->program_break = page_number_data*PAGE_SIZE;
-
+	t->program_break = NULL;
+	t->heap_pages=0;
 
 	union task_union *tu = (union task_union*)t;
 	tss.esp0 = &tu->stack[KERNEL_STACK_SIZE];
