@@ -340,62 +340,66 @@ int sys_read(int fd, char * buf, int count) {
 	return err2;	
 }
 void *sys_sbrk(int increment) {
+	
+	struct task_struct *t = current();
+	page_table_entry *pt = get_PT(t);
+	int HEAPLOG = PAG_LOG_INIT_DATA+NUM_PAG_DATA;
+	
+
 	if (increment >= 0) {
-		if(current()->program_break == NULL) {
+		if(t->program_break == NULL) {
 			int page = alloc_frame();
 			if (page==-1) {free_frame(page); return -ENOMEM;}
-			set_ss_pag(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages,page);
-			current()->program_break = PAG_LOG_INIT_DATA+NUM_PAG_DATA<<12;
-			current()->heap_pages++;
+			
+			set_ss_pag(pt, HEAPLOG + t->heap_pages, page);
+			t->program_break = HEAPLOG<<12;
+			t->heap_pages++;
 		}
-			int count = increment, retvalue = current()->program_break, countpag = 0;
-			/*char c[10];
-			itoa(PH_PAGE(retvalue),c);
-			printk(c);
-			printk("<- Aquesta es l'adreça on comença el heap\n");
-			char d[10];
-			itoa(PH_PAGE(retvalue + increment),d);
-			printk(d);
-			printk("<- Aquesta es l'adreça on acaba el heap\n");*/
-			while (count > 0) {
-				if (current()->program_break%PAGE_SIZE + increment < PAGE_SIZE) {
-					current()->program_break += increment;
-					count -= increment;
-				}
-				else {
-					int page_number_data = alloc_frame();
-					countpag++;
-					if (page_number_data==-1) {
-						int i;
-						for(i=0;i<countpag;i++)free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i)), current()->heap_pages--;
-						return -ENOMEM;
-					}
-					/*AIXI S'HAURIA DE FER*/
-					set_ss_pag(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages,page_number_data);
-					current()->heap_pages++;
-					count -= PAGE_SIZE-(current()->program_break%PAGE_SIZE);					
-					current()->program_break = PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages<<12;
-				}
-			return retvalue;
+		int retvalue = t->program_break, countpag = 0;
+		/*char c[10];
+		itoa(PH_PAGE(retvalue),c);
+		printk(c);
+		printk("<- Aquesta es l'adreça on comença el heap\n");
+		char d[10];
+		itoa(PH_PAGE(retvalue + increment),d);
+		printk(d);
+		printk("<- Aquesta es l'adreça on acaba el heap\n");*/
+		if (t->program_break%PAGE_SIZE + increment < PAGE_SIZE) {
+			t->program_break += increment;
 		}
+		else {
+			t->program_break += increment;
+			while(( (HEAPLOG + t->heap_pages) <<12 ) < (t->program_break)) {
+				int page_number_data = alloc_frame();
+				countpag++;
+				if (page_number_data==-1) {
+					int i;
+					for(i=0;i<countpag;i++)free_frame(get_frame(pt, HEAPLOG + i)), t->heap_pages--;
+					return -ENOMEM;
+				}
+				set_ss_pag(pt, HEAPLOG + t->heap_pages, page_number_data);
+				t->heap_pages++;
+			}
+		}
+		return retvalue; //valor antic
 	}
 	else {
-		if (current()->program_break - increment < 0) return -1;
-		int count = -increment, progbrk = current()->program_break, retvalue = 0;
-			while (count > 0) {
-				if (progbrk%PAGE_SIZE + increment >= 0) {
-					current()->program_break += increment;
-					count += increment;
-				}
-				else {
-					/*AIXI ES COM HAURIA DE SER*/
-					count -= current()->program_break%PAGE_SIZE;
-					current()->heap_pages--;
-					free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages));
-					del_ss_pag(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages);
-					current()->program_break = ((PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages)<<12)-1;
-				}
+		if (t->heap_pages == 0) return -1;
+		if ( (t->program_break + increment) < (HEAPLOG<<12) ) { //si program break apunta a zona de dades
+			while(t->heap_pages > 0){
+				free_frame(get_frame(pt, HEAPLOG + t->heap_pages));
+				del_ss_pag(pt, HEAPLOG + t->heap_pages);
+				t->heap_pages--;
 			}
-		return current()->program_break;
+			t->program_break = HEAPLOG<<12;
+			return t->program_break;
+		}
+		t->program_break += increment;
+		while ((( (HEAPLOG + t->heap_pages) <<12) - t->program_break) > PAGE_SIZE) {
+			t->heap_pages--;
+			free_frame(get_frame(pt, HEAPLOG + t->heap_pages));
+			del_ss_pag(pt, HEAPLOG + t->heap_pages);
+		}
 	}
+	return t->program_break; 
 }
