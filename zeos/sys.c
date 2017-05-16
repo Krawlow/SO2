@@ -26,8 +26,10 @@ struct semafors semf[20];
 
 int check_fd(int fd, int permissions)
 {
-  if (fd < 0 | fd > 1) return -EBADF;
-  if (permissions!=ESCRIPTURA & permissions!=LECTURA) return -EACCES;
+  if ((fd < 0) || (fd > 1)) return -EBADF;
+  if ((fd == 0) && (permissions != LECTURA)) return -EBADF;
+  if ((fd == 1) && (permissions != ESCRIPTURA)) return -EBADF;
+  if ((permissions!=ESCRIPTURA) && (permissions!=LECTURA)) return -EACCES;
   return 0;
 }
 
@@ -148,10 +150,12 @@ int sys_fork()
 		return -EAGAIN; 
 	}
 	t->heap_pages = 1;
-	set_ss_pag(pte,page_number_data,page_number_data);
-	t->program_break = page_number_data*PAGE_SIZE; //page_number_data*PAGE_SIZE ens dona l'adreça de memoria on comença el frame
+	/*set_ss_pag(pte,page_number_data,page_number_data);
+	t->program_break = page_number_data*PAGE_SIZE; */ //page_number_data*PAGE_SIZE ens dona l'adreça de memoria on comença el frame
 //	if (PH_PAGE(t->program_break) == pag_init_copia_da
 	/*---*/
+	set_ss_pag(get_PT(t),PAG_LOG_INIT_DATA+NUM_PAG_DATA,page_number_data);
+	t->program_break = get_frame(get_PT(t),PAG_LOG_INIT_DATA+NUM_PAG_DATA);
 	
 	t->PID = ++global_PID;
 	t->info.user_ticks = 0;
@@ -247,6 +251,7 @@ void sys_exit()
 		for(i=0;i<current()->heap_pages;i++) {
 			free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i));
 			del_ss_pag(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i);
+			//AQUI ES LIA PARDA
 		}
 	}
 //	printk("\n-----\n");
@@ -338,7 +343,8 @@ int sys_sem_destroy(int n_sem) {
 
 int sys_read(int fd, char * buf, int count) {
 	int err;
-	if (err=check_fd(fd,LECTURA) != 0) return err;
+  err=check_fd(fd,LECTURA);
+	if ( err != 0) return err;
 	if (!access_ok(VERIFY_WRITE, buf, sizeof(buf))) return -EFAULT;
 	if (count < 0) return -EINVAL;
 	int err2=sys_read_keyboard(buf,count);
@@ -353,10 +359,14 @@ int sys_read(int fd, char * buf, int count) {
 void *sys_sbrk(int increment) {
 	if (increment >= 0) {
 		int count = increment, retvalue = current()->program_break, countpag = 0;
-		char c[10];
+		/*char c[10];
 		itoa(PH_PAGE(retvalue),c);
 		printk(c);
-		printk("<- Aquesta es la pagina on comença el heap");
+		printk("<- Aquesta es l'adreça on comença el heap");
+		char d[10];
+		itoa(PH_PAGE(retvalue + increment),d);
+		printk(d);
+		printk("<- Aquesta es l'adreça on acaba el heap");*/
 			while (count > 0) {
 				if (PH_PAGE(retvalue + increment) == PH_PAGE(retvalue)) {
 					current()->program_break += increment;
@@ -368,19 +378,30 @@ void *sys_sbrk(int increment) {
 					if (page_number_data==-1) {
 						int i;
 						for(i=0;i<countpag;i++)free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+i));
-						return -ENOMEM; 
+						return -ENOMEM;
 					}
 					current()->heap_pages++;
-					set_ss_pag(get_PT(current()),PH_PAGE(current()->program_break),page_number_data);
+					/*set_ss_pag(get_PT(current()),PH_PAGE(current()->program_break),page_number_data);
 					int new_prog_brk = (current()->program_break&0xFFF000)+0x001000;
 					count -= new_prog_brk-current()->program_break; //bytes restants de la pagina actual
-					current()->program_break = PH_PAGE(page_number_data*PAGE_SIZE);
+					current()->program_break = PH_PAGE(page_number_data*PAGE_SIZE);*/
+					
+					/*AIXI S'HAURIA DE FER*/
+					set_ss_pag(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages,page_number_data);
+					//int new_prog_brk = (PH_PAGE(current()->program_break))>>12)+PAGE_SIZE;
+					//o be...
+					//int new_prog_brk = get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages)<<12;
+					int new_prog_brk = page_number_data*PAGE_SIZE;
+					count -= new_prog_brk-current()->program_break;
+					
+					current()->program_break = new_prog_brk;
+					
 				}
 			}
 		return retvalue;
 	}
 	else {
-		int count = -increment, progbrk = current()->program_break;
+		int count = -increment, progbrk = current()->program_break, retvalue = 0;
 			while (count > 0) {
 				if (PH_PAGE(progbrk - increment) == PH_PAGE(progbrk)) {
 					current()->program_break += increment;
@@ -388,16 +409,18 @@ void *sys_sbrk(int increment) {
 				}
 				else {
 					current()->heap_pages--;
-					del_ss_pag(get_PT(current()),PH_PAGE(current()->program_break));
-					free_frame(get_frame(get_PT(current()),PH_PAGE(current()->program_break));
-					/*He de fer una estructura d'adreces de frames usats!!! o com coi ho faig?
-					
-					int new_prog_brk = (current()->program_break&0xFFF000)+0x001000;
-					count -= new_prog_brk-current()->program_break; //bytes restants de la pagina actual
-					current()->program_break = PH_PAGE(page_number_data*PAGE_SIZE);*/
+					/*free_frame(get_frame(get_PT(current()),PH_PAGE(current()->program_break)));
+					del_ss_pag(get_PT(current()),PH_PAGE(current()->program_break));*/
+					/*AIXI ES COM HAURIA DE SER*/
+					count -= current()->program_break-PH_PAGE(current()->program_break);
+					free_frame(get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages));
+					del_ss_pag(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages);
+					//current()->program_break = ((PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages)>>12)+PAGE_SIZE;
+					//no...
+					current()->program_break = get_frame(get_PT(current()),PAG_LOG_INIT_DATA+NUM_PAG_DATA+current()->heap_pages)+PAGE_SIZE;
 				}
 			}
 		return retvalue;
-	}
+		//return current()->program_break;
 	}
 }

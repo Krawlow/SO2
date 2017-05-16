@@ -52,7 +52,7 @@ int __attribute__ ((__section__(".text.main")))
   main(void)
 {
 global = 0;
-	runjp();
+	//runjp();
 	//runjp_rank(25,25);
 	
 	
@@ -61,7 +61,9 @@ global = 0;
 	//runjp_rank(25,25); //25 bad
 	
 	
-	char c[1000];
+	/*char c[1000];
+	if(read(-1,c,5)==-1) write(1,"funciona\n",10);
+	else write(1,"no funciona\n",13);
 	int i, pid, fff, ccc;
 	for(i=0;i<0;i++) {
 	ccc=clone(func,&c[99]);
@@ -76,7 +78,7 @@ global = 0;
 	//fff=fork();
 	if(fff<0) write(1,"unable to fork",strlen("unable to fork"));
 	
-	}
+	}*/
 	/*if(getpid()==1)while(global == 0){
 	itoa(global,c);
 	write(1,c,strlen(c));
@@ -87,11 +89,12 @@ global = 0;
 	//clone(keyboard,&c[999]);
 	//clone(keyboard,&c[799]);
 	//clone(keyboard,&c[999]);
-	while(1);
-	return(0);
-	int *pan = sbrk(4095);
+	int *pan = sbrk(4096);
+	pan = sbrk(4096);
 	(*pan) = "hola";
 	write(1,(*pan),5);
+	while(1);
+	return(0);
 	
 //PT=0x23000 <pagusr_table+4096>, page=284, frame=312
 //PT=0x23000 <pagusr_table+4096>, page=312, frame=314
