@@ -374,7 +374,8 @@ void *sys_sbrk(int increment) {
 				countpag++;
 				if (page_number_data==-1) {
 					int i;
-					for(i=0;i<countpag;i++)free_frame(get_frame(pt, HEAPLOG + i)), t->heap_pages--;
+					free_frame(page_number_data);
+					t->program_break -= increment;
 					return -ENOMEM;
 				}
 				set_ss_pag(pt, HEAPLOG + t->heap_pages, page_number_data);

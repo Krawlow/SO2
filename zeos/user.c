@@ -52,7 +52,7 @@ int __attribute__ ((__section__(".text.main")))
   main(void)
 {
 global = 0;
-	//runjp();
+	runjp();
 	//runjp_rank(5,5);
 	
 	
@@ -89,12 +89,13 @@ global = 0;
 	//clone(keyboard,&c[999]);
 	//clone(keyboard,&c[799]);
 	//clone(keyboard,&c[999]);
-	int *p = sbrk(0);
-	while (sbrk(4096)>0);
-	sbrk(-4096);
+	/*int *p = sbrk(0);
+	int i=0;
+	while (sbrk(4096)>0)i++;
+	while(i>0)sbrk(-4096),i--;
 	int *d = sbrk(0);
 	if (p == d) write(1,"guai\n", 6);
-	else write(1,"no guai\n", 9);
+	else write(1,"no guai\n", 9);*/
 	while(1);
 	return(0);
 	
